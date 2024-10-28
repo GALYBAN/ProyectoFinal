@@ -7,17 +7,13 @@ public class PlayerController : MonoBehaviour
 
     //-------------Componentes-------------
     private CharacterController _controller;
-    private Transform _camera;
 
     //-------------Inputs----------------
     [SerializeField] private float _speed = 5f;
-    private float _turnSmothVelocity;
-    [SerializeField] private float _turnSmoothTime = 0.5f;
     private float _horizontal;
     //-------------Gravedad------------------
     [SerializeField] private float _gravity = -9.81f;
     [SerializeField] private Vector3 _playerGravity;
-
     [SerializeField] private float _jumpHeight = 3.0f;
 
     //-------------GroundSensor--------------
@@ -28,7 +24,6 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         _controller = GetComponent<CharacterController>();
-        _camera = Camera.main.transform;
     }
 
     // Start is called before the first frame update
@@ -47,21 +42,22 @@ public class PlayerController : MonoBehaviour
             Jump();
         }    
 
+        Movement();
+
         Gravity();
     }
 
     void Movement()
     {
-        Vector3 direction = new Vector3(_horizontal, 0, _vertical);
+        Vector3 direction = new Vector3(_horizontal, 0, 0);
 
         if(direction != Vector3.zero)
         {
-            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + _camera.eulerAngles.y;
-            float smoothAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _turnSmothVelocity, _turnSmoothTime);
+            float targetAngle = Mathf.Atan2(direction.z, direction.x) * Mathf.Rad2Deg;
 
-            transform.rotation = Quaternion.Euler(0, smoothAngle, 0);
+            transform.rotation = Quaternion.Euler(0, targetAngle, 0);
 
-            Vector3 moveDirection = Quaternion.Euler(0, targetAngle, 0) * Vector3.forward;
+            Vector3 moveDirection = Quaternion.Euler(0, targetAngle, 0) * Vector3.right;
 
             _controller.Move(moveDirection * _speed * Time.deltaTime);
         }
