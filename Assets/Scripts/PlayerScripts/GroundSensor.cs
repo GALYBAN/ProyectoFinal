@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class GroundSensor : MonoBehaviour
 {
-    [SerializeField] private Transform sensorPosition;
-    [SerializeField] private float sensorRadius = 0.5f;
-    [SerializeField] private LayerMask groundLayer;
+    public Transform sensorPosition;
+    public float sensorRadius = 0.5f;
+    public LayerMask groundLayer;
 
     public bool IsGrounded()
     {

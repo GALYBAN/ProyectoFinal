@@ -17,6 +17,7 @@ public class PlayerInputs : MonoBehaviour
 
         HorizontalInput = Input.GetAxisRaw("Horizontal");
         JumpPressed = Input.GetButtonDown("Jump");
+        
         TogglePlatformInput = Input.GetButtonDown("Platform");
         if(rightPad > 0.5f && !isPressed) 
         {
