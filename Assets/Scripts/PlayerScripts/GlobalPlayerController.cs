@@ -8,7 +8,7 @@ public class GlobalPlayerController : MonoBehaviour
     private MovementController movementController;
     private PlayerGravity gravityController;
     [SerializeField] private CharacterController characterController;
-    [SerializeField] private PhysicsMaterial physicsMaterial;
+    //[SerializeField] private PhysicsMaterial physicsMaterial;
 
     void Awake()
     {
@@ -37,7 +37,7 @@ public class GlobalPlayerController : MonoBehaviour
         gravityController.ApplyGravity(GetComponent<CharacterController>());
     }
 
-    private void OnControllerColliderHit(ControllerColliderHit hit)
+    /*private void OnControllerColliderHit(ControllerColliderHit hit)
     {
         // Cambiar la fricción según la superficie o el material
         if (hit.collider.CompareTag("SlipperySurface"))
@@ -52,6 +52,6 @@ public class GlobalPlayerController : MonoBehaviour
             characterController.material.dynamicFriction = 0.6f;
             characterController.material.staticFriction = 0.6f;
         }
-    }
+    }*/
 
 }
