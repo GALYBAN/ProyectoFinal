@@ -13,10 +13,6 @@ public class GlobalPlayerController : MonoBehaviour
     void Awake()
     {
         characterController = GetComponent<CharacterController>();
-        if (defaultMaterial != null)
-        {
-            characterController.material = defaultMaterial;
-        }
         inputs = GetComponent<PlayerInputs>();
         movementController = GetComponent<MovementController>();
         gravityController = GetComponent<PlayerGravity>();
@@ -35,24 +31,6 @@ public class GlobalPlayerController : MonoBehaviour
             else if (inputs.HorizontalInput > 0)
             {
                 movementController.SetLastKey("right");
-            }
-        }
-
-        // Detectar colisiones con paredes
-        if ((characterController.collisionFlags & CollisionFlags.Sides) != 0)
-        {
-            // Cambiar el material a uno con menor fricción
-            if (lowFrictionMaterial != null)
-            {
-                characterController.material = lowFrictionMaterial;
-            }
-        }
-        else
-        {
-            // Restaurar el material por defecto
-            if (defaultMaterial != null)
-            {
-                characterController.material = defaultMaterial;
             }
         }
 
