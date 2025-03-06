@@ -10,6 +10,7 @@ public class PlayerInputs : MonoBehaviour
     public Vector2 PlatformMovementInput { get; private set; } // Movimiento de la plataforma
     public bool ConfirmPlatformPlacement { get; private set; } // Confirmar ubicación
     public bool DashInput { get; private set; }
+    public bool CrouchInput { get; private set; }
     
     private bool isPressed = false;
     void Update()
@@ -19,6 +20,7 @@ public class PlayerInputs : MonoBehaviour
         HorizontalInput = Input.GetAxisRaw("Horizontal");
         JumpPressed = Input.GetButtonDown("Jump");
         DashInput = Input.GetButtonDown("Dash");
+        CrouchInput = Input.GetButton("Crouch");
 
 
         TogglePlatformInput = Input.GetButtonDown("Platform");

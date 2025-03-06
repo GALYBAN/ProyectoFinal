@@ -1,0 +1,16 @@
+Agacharse
+
+Ataque basico
+
+Slash
+
+Vida de Cleo
+
+Mana de Cleo
+
+
+---------------------
+
+Menu principal
+
+HUD

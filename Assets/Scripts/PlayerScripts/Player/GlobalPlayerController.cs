@@ -39,6 +39,15 @@ public class GlobalPlayerController : MonoBehaviour
             gravityController.Dash(isDashing: true);
         }
 
+        if (inputs.CrouchInput)
+        {
+            movementController.Crouch(crouching: true);
+        }
+        else if (!inputs.CrouchInput)
+        {
+            movementController.Crouch(crouching: false);
+        }
+
         movementController.Move();
         gravityController.ApplyGravity(GetComponent<CharacterController>());
     }

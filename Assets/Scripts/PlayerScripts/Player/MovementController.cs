@@ -13,9 +13,11 @@ public class MovementController : MonoBehaviour
     private CharacterController controller;
     private PlayerInputs inputs;
     private GroundSensor groundSensor;
+    private Animator anim;
     
     void Start()
     {
+        anim = GetComponentInChildren<Animator>();
         controller = GetComponent<CharacterController>();
         inputs = GetComponent<PlayerInputs>();
         groundSensor = GetComponent<GroundSensor>();
@@ -64,5 +66,10 @@ public class MovementController : MonoBehaviour
     public void SetLastKey(string key)
     {
         lastKey = key;
+    }
+
+    public void Crouch(bool crouching)
+    {
+        anim.SetBool("Agachado", crouching);
     }
 }
