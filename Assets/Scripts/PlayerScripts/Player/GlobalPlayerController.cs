@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GlobalPlayerController : MonoBehaviour
 {
+    private Animations anim;
     private PlayerInputs inputs;
     private MovementController movementController;
     private PlayerGravity gravityController;
@@ -12,6 +13,7 @@ public class GlobalPlayerController : MonoBehaviour
 
     void Awake()
     {
+        anim = GetComponent<Animations>();
         characterController = GetComponent<CharacterController>();
         inputs = GetComponent<PlayerInputs>();
         movementController = GetComponent<MovementController>();
@@ -41,11 +43,11 @@ public class GlobalPlayerController : MonoBehaviour
 
         if (inputs.CrouchInput)
         {
-            movementController.Crouch(crouching: true);
+            anim.SetBool("Agachado", true);
         }
         else if (!inputs.CrouchInput)
         {
-            movementController.Crouch(crouching: false);
+            anim.SetBool("Agachado", false);
         }
 
         movementController.Move();

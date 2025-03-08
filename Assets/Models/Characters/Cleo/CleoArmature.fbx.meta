@@ -9,6 +9,21 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Cleo
     second: {fileID: 2100000, guid: 4fa2a1cba62949a41a2b1d81c772bedd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Sword Edge
+    second: {fileID: 2100000, guid: 5335cfd6db819674ababde4fe0efec76, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SwordAlphaRed
+    second: {fileID: 2100000, guid: 87a0a5cc05f37ca48abc6fed1cd943e5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SwordAlphaRedGlow
+    second: {fileID: 2100000, guid: 6c266c3653d97b74da26aa7643f32c8a, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

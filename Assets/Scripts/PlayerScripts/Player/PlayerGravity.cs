@@ -14,10 +14,12 @@ public class PlayerGravity : MonoBehaviour
 
     private GroundSensor groundSensor;
 
-    private PlayerInputs inputs;    
+    private PlayerInputs inputs;   
+    private Animations anim; 
 
     void Start()
     {
+        anim = GetComponent<Animations>();
         inputs = GetComponent<PlayerInputs>();
         groundSensor = GetComponent<GroundSensor>();
     }
@@ -30,6 +32,7 @@ public class PlayerGravity : MonoBehaviour
         }
         else if (groundSensor.IsGrounded() && playerGravity.y < 0)
         {
+            anim.SetBool("Jump", false);
             playerGravity.y = -1;
         }
 
@@ -40,6 +43,7 @@ public class PlayerGravity : MonoBehaviour
     {
         if (groundSensor.IsGrounded())
         {
+            anim.SetBool("Jump", true);
             playerGravity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
         }
     }

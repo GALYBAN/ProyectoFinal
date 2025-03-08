@@ -5,7 +5,7 @@ using UnityEngine;
 public class SlashAttack : MonoBehaviour
 {
     private PlayerInputs inputs;
-    public Animator animator;
+    private Animations anim;
     public ProjectilePoolManager poolManager;
     public ManaSystem manaSystem;
     public Transform firePoint;
@@ -15,6 +15,7 @@ public class SlashAttack : MonoBehaviour
 
     void Start()
     {
+        anim = GetComponent<Animations>();
         inputs = GetComponent<PlayerInputs>(); 
     }
 
@@ -22,6 +23,7 @@ public class SlashAttack : MonoBehaviour
     {
         if (inputs.SlashInput && !isCooldown && manaSystem.ConsumeManaSlot())
         {
+            anim.SetTrigger("Slash");
             GameObject slash = poolManager.GetProjectile(firePoint.position, firePoint.rotation);
             if (slash != null)
             {

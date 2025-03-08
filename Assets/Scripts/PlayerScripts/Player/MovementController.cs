@@ -10,14 +10,14 @@ public class MovementController : MonoBehaviour
     private float speed;
     private string lastKey;
 
+    private Animations anim;
     private CharacterController controller;
     private PlayerInputs inputs;
     private GroundSensor groundSensor;
-    private Animator anim;
     
     void Start()
     {
-        anim = GetComponentInChildren<Animator>();
+        anim = GetComponent<Animations>();
         controller = GetComponent<CharacterController>();
         inputs = GetComponent<PlayerInputs>();
         groundSensor = GetComponent<GroundSensor>();
@@ -42,6 +42,11 @@ public class MovementController : MonoBehaviour
             }
 
             controller.Move(direction * speed * Time.deltaTime);
+            anim.SetBool("Walk", true);
+        }
+        else
+        {
+            anim.SetBool("Walk", false);
         }
     }
 
@@ -68,8 +73,4 @@ public class MovementController : MonoBehaviour
         lastKey = key;
     }
 
-    public void Crouch(bool crouching)
-    {
-        anim.SetBool("Agachado", crouching);
-    }
 }
