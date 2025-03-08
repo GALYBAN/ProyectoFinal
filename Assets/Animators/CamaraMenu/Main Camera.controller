@@ -34,7 +34,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: Portada
+    m_ConditionEvent: PortadaCamera
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -5528955177915977905}
@@ -86,7 +86,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: Portada
+    m_ConditionEvent: PortadaCamera
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1142251343424775782}
@@ -111,7 +111,7 @@ AnimatorController:
   m_Name: Main Camera
   serializedVersion: 5
   m_AnimatorParameters:
-  - m_Name: Portada
+  - m_Name: PortadaCamera
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
