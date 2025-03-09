@@ -23,7 +23,7 @@ public class MovementController : MonoBehaviour
         groundSensor = GetComponent<GroundSensor>();
     }
 
-    public void Move()
+    public bool Move()
     {
         float horizontal = inputs.HorizontalInput;
         Vector3 direction = new Vector3(horizontal, 0, 0);
@@ -48,6 +48,8 @@ public class MovementController : MonoBehaviour
         {
             anim.SetBool("Walk", false);
         }
+
+        return direction != Vector3.zero;
     }
 
     private void RotateToDirection(Vector3 direction)

@@ -6,6 +6,8 @@ public class SlashAttack : MonoBehaviour
 {
     private PlayerInputs inputs;
     private Animations anim;
+    private MovementController move;
+    private GroundSensor groundSensor;
     public ProjectilePoolManager poolManager;
     public ManaSystem manaSystem;
     public Transform firePoint;
@@ -15,13 +17,15 @@ public class SlashAttack : MonoBehaviour
 
     void Start()
     {
+        groundSensor = GetComponent<GroundSensor>();    
+        move = GetComponent<MovementController>();
         anim = GetComponent<Animations>();
         inputs = GetComponent<PlayerInputs>(); 
     }
 
     void Update()
     {
-        if (inputs.SlashInput && !isCooldown && manaSystem.ConsumeManaSlot())
+        if (inputs.SlashInput && !isCooldown && manaSystem.ConsumeManaSlot() && !move.Move() && groundSensor.IsGrounded())
         {
             anim.SetTrigger("Slash");
             GameObject slash = poolManager.GetProjectile(firePoint.position, firePoint.rotation);

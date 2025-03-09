@@ -55,6 +55,7 @@ public class PlayerGravity : MonoBehaviour
 
         if (isDashing && dashCount > 0)
         {
+            anim.SetTrigger("Dash");
             dashSpeed = new Vector3(dashForce * transform.right.x, playerGravity.y, playerGravity.z);
             playerGravity =  dashSpeed;
             dashCount--;
