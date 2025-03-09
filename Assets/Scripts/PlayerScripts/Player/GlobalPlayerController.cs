@@ -43,11 +43,11 @@ public class GlobalPlayerController : MonoBehaviour
 
         if (inputs.CrouchInput)
         {
-            anim.SetBool("Agachado", true);
+            anim.SetBool("Crouch", true);
         }
         else if (!inputs.CrouchInput)
         {
-            anim.SetBool("Agachado", false);
+            anim.SetBool("Crouch", false);
         }
 
         movementController.Move();

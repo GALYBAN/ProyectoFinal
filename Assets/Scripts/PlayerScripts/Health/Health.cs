@@ -15,6 +15,14 @@ public class HealthSystem : MonoBehaviour
         UpdateHealthUI();
     }
 
+    void Update()
+    {
+        if (currentHealthSlots <= 0)
+        {
+            ScenesManager.Instance.DeathScene();
+        }
+    }
+
     public void TakeDamage()
     {
         if (currentHealthSlots > 0)
@@ -40,4 +48,6 @@ public class HealthSystem : MonoBehaviour
             healthSlotsUI[i].enabled = i < currentHealthSlots;
         }
     }
+
+
 }
