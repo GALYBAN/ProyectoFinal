@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 public class MenuPrincipal : MonoBehaviour
 {
@@ -10,7 +9,6 @@ public class MenuPrincipal : MonoBehaviour
     [SerializeField] private GameObject canvasMenu;
     [SerializeField] private GameObject canvasOpciones;
     [SerializeField] private CanvasGroup canvasGroup;
-    
     private Animator[] anim;
 
     void Awake()
@@ -113,12 +111,12 @@ public class MenuPrincipal : MonoBehaviour
 
     public void Salir()
     {
-        Application.Quit();
+        ScenesManager.Instance.QuitGame();
     }
 
     public void NovaPartida()
     {
-        SceneManager.LoadScene(1);
+        ScenesManager.Instance.LoadScene(1);
     }
 }
 
