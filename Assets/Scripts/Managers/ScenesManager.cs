@@ -21,6 +21,16 @@ public class ScenesManager : MonoBehaviour
         }
     }
 
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -36,7 +46,7 @@ public class ScenesManager : MonoBehaviour
     private void Start()
     {
         FindDeathCanvas();
-        SceneManager.sceneLoaded += OnSceneLoaded;
+       
     }
 
     public void LoadScene(int sceneIndex)
