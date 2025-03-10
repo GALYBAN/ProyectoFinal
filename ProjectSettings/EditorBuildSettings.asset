@@ -12,6 +12,6 @@ EditorBuildSettings:
     path: Assets/Scenes/Juego.unity
     guid: 8124e5870f4fd4c779e7a5f994e84ad1
   - enabled: 0
-    path: Assets/Scenes/Prueba01.unity
-    guid: a075db327116d5342bebbea21bf1a9d0
+    path: Assets/Scenes/PrincessReborn.unity
+    guid: eb2397f9737af88478c8e882e9130e0e
   m_configObjects: {}

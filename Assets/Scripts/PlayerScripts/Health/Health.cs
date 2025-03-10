@@ -9,7 +9,7 @@ public class HealthSystem : MonoBehaviour
     public int currentHealthSlots;
     public Image[] healthSlotsUI;
 
-    void Start()
+    void Awake()
     {
         currentHealthSlots = maxHealthSlots;
         UpdateHealthUI();

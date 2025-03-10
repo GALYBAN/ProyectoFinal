@@ -9,7 +9,7 @@ public class ManaSystem : MonoBehaviour
     private int currentManaSlots;
     public Image[] manaSlotsUI;
 
-    void Start()
+    void Awake()
     {
         currentManaSlots = maxManaSlots;
         UpdateManaUI();
