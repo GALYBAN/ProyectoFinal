@@ -1,16 +1,20 @@
-Agacharse TICK
+Agacharse
+
+Caminar agachado
+
+Reducir movimiento mientras estas agachado
 
 Ataque basico
 
-Slash
+Combo 3 Ataques
 
-Vida de Cleo
+Recuperar mana cada 3 Ataques
 
-Mana de Cleo
-
+Puntos de guardado
 
 ---------------------
+Ajustar Menú de muerte
 
-Menu principal
+Hacer letras (Has muerto mas chulas)
 
-HUD
+Menú de pausa
