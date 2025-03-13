@@ -9,10 +9,13 @@ public class GlobalPlayerController : MonoBehaviour
     private MovementController movementController;
     private PlayerGravity gravityController;
     [SerializeField] private CharacterController characterController;
+
+    private ComboController comboController;
     //[SerializeField] private PhysicsMaterial physicsMaterial;
 
     void Awake()
     {
+        comboController = GetComponent<ComboController>();
         anim = GetComponent<Animations>();
         characterController = GetComponent<CharacterController>();
         inputs = GetComponent<PlayerInputs>();
@@ -48,6 +51,11 @@ public class GlobalPlayerController : MonoBehaviour
         else if (!inputs.CrouchInput)
         {
             anim.SetBool("Crouch", false);
+        }
+
+        if (inputs.AttackInput)
+        {
+            comboController.HandleCombo();
         }
 
         movementController.Move();

@@ -9,22 +9,27 @@ public class MovementController : MonoBehaviour
 
     private float speed;
     private string lastKey;
+    private bool isAttacking;
 
-    private Animations anim;
+    private Animator anim;
     private CharacterController controller;
     private PlayerInputs inputs;
     private GroundSensor groundSensor;
     
     void Start()
     {
-        anim = GetComponent<Animations>();
+        anim = GetComponent<Animator>();
         controller = GetComponent<CharacterController>();
         inputs = GetComponent<PlayerInputs>();
         groundSensor = GetComponent<GroundSensor>();
+
+        anim.applyRootMotion = false; // Root Motion solo en ataques
     }
 
     public bool Move()
     {
+        if (isAttacking) return false; // Bloquear movimiento si estamos atacando
+
         float horizontal = inputs.HorizontalInput;
         Vector3 direction = new Vector3(horizontal, 0, 0);
 
@@ -75,4 +80,19 @@ public class MovementController : MonoBehaviour
         lastKey = key;
     }
 
+    public void Attack(int comboStep)
+    {
+        isAttacking = true;
+        anim.applyRootMotion = true; // Activar root motion solo durante el ataque
+        anim.SetTrigger("Attack" + comboStep);
+        StartCoroutine(EndAttackAfterAnimation());
+    }
+
+    private IEnumerator EndAttackAfterAnimation()
+    {
+        yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
+        isAttacking = false;
+        anim.applyRootMotion = false; // Desactivar root motion después del ataque
+    }
 }
+
