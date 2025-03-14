@@ -8,6 +8,8 @@ public class GlobalPlayerController : MonoBehaviour
     private PlayerInputs inputs;
     private MovementController movementController;
     private PlayerGravity gravityController;
+
+    private ComboController combos;
     [SerializeField] private CharacterController characterController;
 
     private ComboController comboController;
@@ -15,6 +17,7 @@ public class GlobalPlayerController : MonoBehaviour
 
     void Awake()
     {
+        combos = GetComponent<ComboController>();
         comboController = GetComponent<ComboController>();
         anim = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
@@ -53,9 +56,9 @@ public class GlobalPlayerController : MonoBehaviour
             anim.SetBool("Crouch", false);
         }
 
-        if (inputs.AttackInput)
+        if (inputs.AttackInput && combos.OnAttackAnimationEnd() == true)
         {
-            comboController.HandleCombo();
+            comboController.HandleCombo(new Vector3(inputs.HorizontalInput, 0, 0));
         }
 
         movementController.Move();

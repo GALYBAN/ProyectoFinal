@@ -8,8 +8,10 @@ public class MovementController : MonoBehaviour
     [SerializeField] private float airSpeed = 2.5f;
 
     private float speed;
+    private float speedMultiplier = 1f;
     private string lastKey;
     private bool isAttacking;
+    private Vector3 attackDirection;
 
     private Animator anim;
     private CharacterController controller;
@@ -22,27 +24,28 @@ public class MovementController : MonoBehaviour
         controller = GetComponent<CharacterController>();
         inputs = GetComponent<PlayerInputs>();
         groundSensor = GetComponent<GroundSensor>();
-
-        anim.applyRootMotion = false; // Root Motion solo en ataques
     }
 
     public bool Move()
     {
-        if (isAttacking) return false; // Bloquear movimiento si estamos atacando
-
         float horizontal = inputs.HorizontalInput;
         Vector3 direction = new Vector3(horizontal, 0, 0);
+
+        if (isAttacking && Vector3.Dot(direction, attackDirection) < 0)
+        {
+            direction = Vector3.zero;
+        }
 
         if (direction != Vector3.zero)
         {
             if (groundSensor.IsGrounded())
             {
-                speed = groundedSpeed;
+                speed = groundedSpeed * speedMultiplier;
                 RotateToDirection(direction);
             }
             else
             {
-                speed = airSpeed;
+                speed = airSpeed * speedMultiplier;
                 AdjustAirSpeed(horizontal);
             }
 
@@ -83,16 +86,27 @@ public class MovementController : MonoBehaviour
     public void Attack(int comboStep)
     {
         isAttacking = true;
-        anim.applyRootMotion = true; // Activar root motion solo durante el ataque
         anim.SetTrigger("Attack" + comboStep);
         StartCoroutine(EndAttackAfterAnimation());
+    }
+
+    public void SetAttackState(bool attacking, float multiplier, Vector3 direction)
+    {
+        isAttacking = attacking;
+        speedMultiplier = multiplier;
+        attackDirection = direction.normalized;
+
+        if (attacking)
+        {
+            StartCoroutine(EndAttackAfterAnimation());
+        }
     }
 
     private IEnumerator EndAttackAfterAnimation()
     {
         yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
         isAttacking = false;
-        anim.applyRootMotion = false; // Desactivar root motion después del ataque
+        speedMultiplier = 1f;
+        attackDirection = Vector3.zero;
     }
 }
-
