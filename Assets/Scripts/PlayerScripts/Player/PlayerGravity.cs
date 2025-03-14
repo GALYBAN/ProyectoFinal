@@ -15,11 +15,11 @@ public class PlayerGravity : MonoBehaviour
     private GroundSensor groundSensor;
 
     private PlayerInputs inputs;   
-    private Animations anim; 
+    private Animator anim; 
 
     void Start()
     {
-        anim = GetComponent<Animations>();
+        anim = GetComponent<Animator>();
         inputs = GetComponent<PlayerInputs>();
         groundSensor = GetComponent<GroundSensor>();
     }
@@ -56,7 +56,7 @@ public class PlayerGravity : MonoBehaviour
         if (isDashing && dashCount > 0)
         {
             anim.SetTrigger("Dash");
-            dashSpeed = new Vector3(dashForce * transform.right.x, playerGravity.y, playerGravity.z);
+            dashSpeed = new Vector3(dashForce * -transform.right.x, playerGravity.y, playerGravity.z);
             playerGravity =  dashSpeed;
             dashCount--;
             StartCoroutine(WaitForDash());

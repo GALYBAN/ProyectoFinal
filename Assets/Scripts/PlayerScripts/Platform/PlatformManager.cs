@@ -6,7 +6,7 @@ public class PlatformManager : MonoBehaviour
     [SerializeField] private GameObject platformPrefab; // Prefab de la plataforma
     [SerializeField] private LayerMask groundLayer; // Capa del suelo
     [SerializeField] private LayerMask collisionLayers; // Capas que bloquearán la creación
-    [SerializeField] private Vector3 spawnOffset = new Vector3(2, 0, 0); // Offset inicial de la plataforma
+    [SerializeField] private Vector3 spawnOffset = new Vector3(-2, 0, 0); // Offset inicial de la plataforma
 
     private GameObject[] platformPool; // Array de plataformas
     private GameObject currentPlatform; // Plataforma actualmente activa

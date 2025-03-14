@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GlobalPlayerController : MonoBehaviour
 {
-    private Animations anim;
+    private Animator anim;
     private PlayerInputs inputs;
     private MovementController movementController;
     private PlayerGravity gravityController;
@@ -16,7 +16,7 @@ public class GlobalPlayerController : MonoBehaviour
     void Awake()
     {
         comboController = GetComponent<ComboController>();
-        anim = GetComponent<Animations>();
+        anim = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
         inputs = GetComponent<PlayerInputs>();
         movementController = GetComponent<MovementController>();

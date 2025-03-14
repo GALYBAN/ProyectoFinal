@@ -9,7 +9,7 @@ public class Animations : MonoBehaviour
 
     void Start()
     {
-        animator = GetComponentInChildren<Animator>();
+        animator = GetComponent<Animator>();
     }
 
     public void SetBool(string paramName, bool value) => animator.SetBool(paramName, value);

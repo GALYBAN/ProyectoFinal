@@ -5,7 +5,7 @@ using UnityEngine;
 public class SlashAttack : MonoBehaviour
 {
     private PlayerInputs inputs;
-    private Animations anim;
+    private Animator anim;
     private MovementController move;
     private GroundSensor groundSensor;
     public ProjectilePoolManager poolManager;
@@ -19,7 +19,7 @@ public class SlashAttack : MonoBehaviour
     {
         groundSensor = GetComponent<GroundSensor>();    
         move = GetComponent<MovementController>();
-        anim = GetComponent<Animations>();
+        anim = GetComponent<Animator>();
         inputs = GetComponent<PlayerInputs>(); 
     }
 

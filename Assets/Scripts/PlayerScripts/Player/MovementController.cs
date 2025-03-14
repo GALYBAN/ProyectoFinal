@@ -59,7 +59,7 @@ public class MovementController : MonoBehaviour
 
     private void RotateToDirection(Vector3 direction)
     {
-        float targetAngle = Mathf.Atan2(direction.z, direction.x) * Mathf.Rad2Deg;
+        float targetAngle = Mathf.Atan2(direction.z, -direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0, targetAngle, 0);
     }
 
