@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MovementController : MonoBehaviour
@@ -13,6 +12,7 @@ public class MovementController : MonoBehaviour
     private bool isAttacking;
     private Vector3 attackDirection;
 
+    private ComboController comboController;
     private Animator anim;
     private CharacterController controller;
     private PlayerInputs inputs;
@@ -20,6 +20,7 @@ public class MovementController : MonoBehaviour
     
     void Start()
     {
+        comboController = GetComponent<ComboController>();
         anim = GetComponent<Animator>();
         controller = GetComponent<CharacterController>();
         inputs = GetComponent<PlayerInputs>();
@@ -83,11 +84,23 @@ public class MovementController : MonoBehaviour
         lastKey = key;
     }
 
+    public void EndAttackAfterAnimation()
+    {
+        isAttacking = false;
+        speedMultiplier = 1f;
+        attackDirection = Vector3.zero;
+
+        // Call ComboEnd if it's the last attack in the combo
+        if (comboController.comboStep == 3)
+        {
+            comboController.ComboEnd();
+        }
+    }
+
     public void Attack(int comboStep)
     {
         isAttacking = true;
-        anim.SetTrigger("Attack" + comboStep);
-        StartCoroutine(EndAttackAfterAnimation());
+        anim.SetTrigger("Attack" + comboStep);  // Set the correct trigger based on combo step
     }
 
     public void SetAttackState(bool attacking, float multiplier, Vector3 direction)
@@ -96,17 +109,6 @@ public class MovementController : MonoBehaviour
         speedMultiplier = multiplier;
         attackDirection = direction.normalized;
 
-        if (attacking)
-        {
-            StartCoroutine(EndAttackAfterAnimation());
-        }
-    }
-
-    private IEnumerator EndAttackAfterAnimation()
-    {
-        yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
-        isAttacking = false;
-        speedMultiplier = 1f;
-        attackDirection = Vector3.zero;
+        // Removed redundant trigger setting
     }
 }

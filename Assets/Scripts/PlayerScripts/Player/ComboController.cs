@@ -5,9 +5,9 @@ public class ComboController : MonoBehaviour
 {
     [SerializeField] private MovementController movementController;
     [SerializeField] private float comboResetTime = 1f;
-    [SerializeField] private float comboMoveSpeedMultiplier = 0.3f; // Velocidad reducida durante el combo
+    [SerializeField] private float comboMoveSpeedMultiplier = 0.3f;
 
-    private int comboStep = 0;
+    public int comboStep = 0;
     private float lastAttackTime;
     private bool canCombo = true; // Controla si se puede continuar el combo
 
@@ -18,6 +18,7 @@ public class ComboController : MonoBehaviour
 
     void Update()
     {
+        // Reset the combo if the time between attacks exceeds the reset time
         if (Time.time - lastAttackTime > comboResetTime)
         {
             ResetCombo();
@@ -26,6 +27,8 @@ public class ComboController : MonoBehaviour
 
     public void HandleCombo(Vector3 attackDirection)
     {
+        if (!canCombo) return;  // Si no se puede ejecutar el combo, salimos.
+
         comboStep++;
         if (comboStep > 3)
         {
@@ -37,22 +40,31 @@ public class ComboController : MonoBehaviour
         movementController.Attack(comboStep);
         lastAttackTime = Time.time;
 
-        // Bloquea el combo hasta que la animación termine
-        canCombo = false;
+        canCombo = false; // Evita que se ejecute un nuevo combo inmediatamente
     }
 
-    // Este método será llamado desde otro script para saber si la animación ha terminado
-    public bool OnAttackAnimationEnd()
+    // Método que se llama desde el evento de animación para continuar el combo
+    public void OnAttackAnimationEnd()
     {
-        Debug.Log("OnAttackAnimationEnd()");
-        canCombo = true;
-        return canCombo;
+        canCombo = true;  // Permite continuar el combo cuando la animación haya terminado
+    }
+
+    // Este evento es para finalizar todo el combo
+    public void ComboEnd()
+    {
+        ResetCombo();
     }
 
     public void ResetCombo()
     {
         comboStep = 0;
         movementController.SetAttackState(false, 1f, Vector3.zero);
+        canCombo = true;  // Vuelve a habilitar el combo después de resetear
+    }
+
+    // Método adicional para verificar si el combo está listo desde otro script
+    public bool IsComboReady()
+    {
+        return canCombo;
     }
 }
-

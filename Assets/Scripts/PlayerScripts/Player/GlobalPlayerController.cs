@@ -9,15 +9,13 @@ public class GlobalPlayerController : MonoBehaviour
     private MovementController movementController;
     private PlayerGravity gravityController;
 
-    private ComboController combos;
+    private ComboController comboController;
     [SerializeField] private CharacterController characterController;
 
-    private ComboController comboController;
-    //[SerializeField] private PhysicsMaterial physicsMaterial;
+    private bool attackProcessed = false; // Track if attack input has been processed
 
     void Awake()
     {
-        combos = GetComponent<ComboController>();
         comboController = GetComponent<ComboController>();
         anim = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
@@ -56,30 +54,18 @@ public class GlobalPlayerController : MonoBehaviour
             anim.SetBool("Crouch", false);
         }
 
-        if (inputs.AttackInput && combos.OnAttackAnimationEnd() == true)
+        // Handle attack input with a flag to prevent spamming
+        if (inputs.AttackInput && comboController.IsComboReady() && !attackProcessed)
         {
             comboController.HandleCombo(new Vector3(inputs.HorizontalInput, 0, 0));
+            attackProcessed = true;
+        }
+        else if (!inputs.AttackInput)
+        {
+            attackProcessed = false; // Reset the flag when the attack input is released
         }
 
         movementController.Move();
         gravityController.ApplyGravity(GetComponent<CharacterController>());
     }
-
-    /*private void OnControllerColliderHit(ControllerColliderHit hit)
-    {
-        // Cambiar la fricción según la superficie o el material
-        if (hit.collider.CompareTag("SlipperySurface"))
-        {
-            // Ajusta el comportamiento de fricción si estás en una superficie resbaladiza
-            characterController.material.dynamicFriction = 0.2f;
-            characterController.material.staticFriction = 0.2f;
-        }
-        else
-        {
-            // Físicas por defecto
-            characterController.material.dynamicFriction = 0.6f;
-            characterController.material.staticFriction = 0.6f;
-        }
-    }*/
-
 }
