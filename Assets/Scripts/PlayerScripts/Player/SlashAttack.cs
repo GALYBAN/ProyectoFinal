@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class SlashAttack : MonoBehaviour
@@ -9,7 +10,6 @@ public class SlashAttack : MonoBehaviour
     private MovementController move;
     private GroundSensor groundSensor;
     public ProjectilePoolManager poolManager;
-    public ManaSystem manaSystem;
     public Transform firePoint;
     public Transform spawnPoint; // Nuevo punto de spawn para el slash
     public float cooldownTime = 1f;
@@ -25,7 +25,7 @@ public class SlashAttack : MonoBehaviour
 
     void Update()
     {
-        if (inputs.SlashInput && !isCooldown && manaSystem.ConsumeManaSlot() && !move.Move() && groundSensor.IsGrounded())
+        if (inputs.SlashInput && !isCooldown && GameManager.Instance.ConsumeManaSlot() && !move.Move() && groundSensor.IsGrounded())
         {
             anim.SetTrigger("Slash");
             GameObject slash = poolManager.GetProjectile(firePoint.position, firePoint.rotation);

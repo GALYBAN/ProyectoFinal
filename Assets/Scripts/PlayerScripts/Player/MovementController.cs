@@ -5,11 +5,13 @@ public class MovementController : MonoBehaviour
 {
     [SerializeField] private float groundedSpeed = 5f;
     [SerializeField] private float airSpeed = 2.5f;
+    [SerializeField] private float crouchSpeedMultiplier = 0.5f; // Reducirá la velocidad al 50% al agacharse
 
     private float speed;
     private float speedMultiplier = 1f;
     private string lastKey;
     private bool isAttacking;
+    private bool isCrouching; // Nueva variable para detectar si está agachado
     private Vector3 attackDirection;
 
     private ComboController comboController;
@@ -48,6 +50,12 @@ public class MovementController : MonoBehaviour
             {
                 speed = airSpeed * speedMultiplier;
                 AdjustAirSpeed(horizontal);
+            }
+
+            // Aplicar reducción de velocidad si está agachado
+            if (isCrouching)
+            {
+                speed *= crouchSpeedMultiplier;
             }
 
             controller.Move(direction * speed * Time.deltaTime);
@@ -90,7 +98,6 @@ public class MovementController : MonoBehaviour
         speedMultiplier = 1f;
         attackDirection = Vector3.zero;
 
-        // Call ComboEnd if it's the last attack in the combo
         if (comboController.comboStep == 3)
         {
             comboController.ComboEnd();
@@ -100,7 +107,7 @@ public class MovementController : MonoBehaviour
     public void Attack(int comboStep)
     {
         isAttacking = true;
-        anim.SetTrigger("Attack" + comboStep);  // Set the correct trigger based on combo step
+        anim.SetTrigger("Attack" + comboStep);
     }
 
     public void SetAttackState(bool attacking, float multiplier, Vector3 direction)
@@ -108,7 +115,12 @@ public class MovementController : MonoBehaviour
         isAttacking = attacking;
         speedMultiplier = multiplier;
         attackDirection = direction.normalized;
+    }
 
-        // Removed redundant trigger setting
+    // Método para activar o desactivar el estado de agachado
+    public void Crouch(bool crouching)
+    {
+        isCrouching = crouching;
+        anim.SetBool("Crouch", crouching);
     }
 }

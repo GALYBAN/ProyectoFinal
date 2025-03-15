@@ -8,7 +8,7 @@ public class GlobalPlayerController : MonoBehaviour
     private PlayerInputs inputs;
     private MovementController movementController;
     private PlayerGravity gravityController;
-
+    private GroundSensor groundSensor;
     private ComboController comboController;
     [SerializeField] private CharacterController characterController;
 
@@ -16,6 +16,7 @@ public class GlobalPlayerController : MonoBehaviour
 
     void Awake()
     {
+        groundSensor = GetComponent<GroundSensor>();
         comboController = GetComponent<ComboController>();
         anim = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
@@ -45,12 +46,14 @@ public class GlobalPlayerController : MonoBehaviour
             gravityController.Dash(isDashing: true);
         }
 
-        if (inputs.CrouchInput)
+        if (inputs.CrouchInput && groundSensor.IsGrounded())
         {
+            movementController.Crouch(true);
             anim.SetBool("Crouch", true);
         }
         else if (!inputs.CrouchInput)
         {
+            movementController.Crouch(false);
             anim.SetBool("Crouch", false);
         }
 
