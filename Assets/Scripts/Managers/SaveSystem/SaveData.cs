@@ -21,7 +21,7 @@ public class SaveData
                 playerY = position.y;
                 playerZ = position.z;
                 playerHealth = health;
-                lastCheckpoint = checkpoint;
                 playerMana = mana;
+                lastCheckpoint = checkpoint;
             }
 }

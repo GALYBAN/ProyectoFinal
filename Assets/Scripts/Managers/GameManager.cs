@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    
+
     [Header("Mana Settings")]
     public int maxManaSlots = 2;
     public int currentManaSlots;
@@ -16,6 +16,9 @@ public class GameManager : MonoBehaviour
     public int maxHealthSlots = 3;
     public int currentHealthSlots;
     public Image[] healthSlotsUI;
+
+    private Vector3 lastSavedPosition;
+    private string lastCheckpoint;
 
     void Awake()
     {
@@ -28,13 +31,15 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        
+
         DontDestroyOnLoad(gameObject);
 
         currentManaSlots = maxManaSlots;
         currentHealthSlots = maxHealthSlots;
+
         UpdateManaUI();
         UpdateHealthUI();
+        LoadPlayerData();
     }
 
     public bool ConsumeManaSlot()
@@ -72,7 +77,7 @@ public class GameManager : MonoBehaviour
             currentHealthSlots--;
             UpdateHealthUI();
         }
-        
+
         if (currentHealthSlots <= 0)
         {
             ScenesManager.Instance.DeathScene();
@@ -93,6 +98,30 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < healthSlotsUI.Length; i++)
         {
             healthSlotsUI[i].enabled = i < currentHealthSlots;
+        }
+    }
+
+    public void SavePlayerData(string checkpointName, Vector3 playerPosition)
+    {
+        lastCheckpoint = checkpointName;
+        lastSavedPosition = playerPosition;
+        SaveManager.SaveGame(lastSavedPosition, currentHealthSlots, currentManaSlots, lastCheckpoint);
+        Debug.Log("Partida guardada en: " + checkpointName);
+    }
+
+    public void LoadPlayerData()
+    {
+        SaveData data = SaveManager.LoadGame();
+        if (data != null)
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+            {
+                player.transform.position = new Vector3(data.playerX, data.playerY, data.playerZ);
+            }
+            currentHealthSlots = data.playerHealth;
+            lastCheckpoint = data.lastCheckpoint;
+            Debug.Log("Jugador cargado en: " + lastCheckpoint);
         }
     }
 }

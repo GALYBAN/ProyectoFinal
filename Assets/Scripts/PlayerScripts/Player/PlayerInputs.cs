@@ -13,6 +13,8 @@ public class PlayerInputs : MonoBehaviour
     public bool CrouchInput { get; private set; }
     public bool SlashInput { get; private set; }
     public bool AttackInput { get; private set; }
+    public bool InteractInput { get; private set; }
+    public bool PauseInput { get; private set; }
     
     private bool isPressed = false;
     void Update()
@@ -25,7 +27,8 @@ public class PlayerInputs : MonoBehaviour
         CrouchInput = Input.GetButton("Crouch");
         SlashInput = Input.GetButtonDown("Slash");
         AttackInput = Input.GetButtonDown("Attack");
-
+        InteractInput = Input.GetButtonDown("Interact");
+        PauseInput = Input.GetButtonDown("Pause");
 
 
         TogglePlatformInput = Input.GetButtonDown("Platform");
