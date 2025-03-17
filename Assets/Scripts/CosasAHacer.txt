@@ -1,19 +1,10 @@
-Agacharse
-
-Caminar agachado
-
-Reducir movimiento mientras estas agachado
-
-Ataque basico
-
-Combo 3 Ataques
+Hacer que la textura que brilla se vea por los dos lados
 
 Recuperar mana cada 3 Ataques
 
 Puntos de guardado
 
 ---------------------
-Ajustar Menú de muerte
 
 Hacer letras (Has muerto mas chulas)
 
