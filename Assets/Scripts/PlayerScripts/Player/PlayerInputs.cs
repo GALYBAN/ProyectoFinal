@@ -12,7 +12,7 @@ public class PlayerInputs : MonoBehaviour
     public bool DashInput { get; private set; }
     public bool CrouchInput { get; private set; }
     public bool SlashInput { get; private set; }
-    public bool AttackInput { get; private set; }
+    public bool AttackInput;
     public bool InteractInput { get; private set; }
     public bool PauseInput { get; private set; }
     
