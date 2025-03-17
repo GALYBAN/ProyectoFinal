@@ -22,7 +22,7 @@ public class BridgeCanvas : MonoBehaviour
 
     public void CargarPartida()
     {
-        GameManager.Instance.LoadPlayerData();
+        SaveManager.LoadGame();
     }
 
     public void NovaPartida()

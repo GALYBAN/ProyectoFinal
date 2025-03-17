@@ -2591,9 +2591,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1365433388}
-        m_TargetAssemblyTypeName: BridgeCanvas, Assembly-CSharp
-        m_MethodName: Reprendre
+      - m_Target: {fileID: 1264153703}
+        m_TargetAssemblyTypeName: SavePoint, Assembly-CSharp
+        m_MethodName: CloseSaveMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

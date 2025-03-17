@@ -22,14 +22,13 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        if (Instance == null)
+        if (Instance != null && Instance != this)
         {
-            Instance = this;
+            Destroy(gameObject);
         }
         else
         {
-            Destroy(gameObject);
-            return;
+            Instance = this;
         }
 
         DontDestroyOnLoad(gameObject);
@@ -39,6 +38,10 @@ public class GameManager : MonoBehaviour
 
         UpdateManaUI();
         UpdateHealthUI();
+    }
+
+    void Start()
+    {
         LoadPlayerData();
     }
 
@@ -117,11 +120,23 @@ public class GameManager : MonoBehaviour
             GameObject player = GameObject.FindGameObjectWithTag("Player");
             if (player != null)
             {
-                player.transform.position = new Vector3(data.playerX, data.playerY, data.playerZ);
+                CharacterController controller = player.GetComponent<CharacterController>();
+                if (controller != null)
+                {
+                    controller.enabled = false; // Desactiva el CharacterController
+                }
+
+                player.transform.position = new Vector3(data.playerX, data.playerY, data.playerZ); // Mueve al jugador
+                
+                if (controller != null)
+                {
+                    controller.enabled = true; // Reactiva el CharacterController
+                }
             }
             currentHealthSlots = data.playerHealth;
-            lastCheckpoint = data.lastCheckpoint;
-            Debug.Log("Jugador cargado en: " + lastCheckpoint);
+            currentManaSlots = data.playerMana;
+            Debug.Log("Jugador cargado en: " + data.lastCheckpoint);
         }
     }
+
 }
