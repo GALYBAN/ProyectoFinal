@@ -5,13 +5,16 @@ public class SavePoint : MonoBehaviour
     [SerializeField] private string checkpointName;
     [SerializeField] private GameObject saveButtonUI;
     [SerializeField] private GameObject saveMenu;
-
     private PlayerInputs inputs;
+
     private bool playerInRange = false;
 
-    private void Start()
+    private void Awake()
     {
         inputs = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerInputs>();
+    }
+    private void Start()
+    {
         saveButtonUI.SetActive(false);
         saveMenu.SetActive(false);
     }
@@ -21,13 +24,11 @@ public class SavePoint : MonoBehaviour
         if (inputs.InteractInput && playerInRange)
         {
             OpenSaveMenu();
-            saveButtonUI.SetActive(false);
         }
-        else if (inputs.PauseInput)
+        else if (inputs.PauseInput && playerInRange)
         {
-            CloseSaveMenu();
+            CloseSaveMenu();   
         }
-
     }
 
     private void OnTriggerEnter(Collider other)
@@ -39,13 +40,6 @@ public class SavePoint : MonoBehaviour
         }
     }
 
-    private void OnTriggerStay(Collider other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            inputs.AttackInput = false;
-        }
-    }
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
@@ -69,9 +63,10 @@ public class SavePoint : MonoBehaviour
         if (playerInRange)
         {
             GameObject player = GameObject.FindGameObjectWithTag("Player");
-            if (player != null)
+            PlayerStats stats = player.GetComponent<PlayerStats>();
+            if (player != null && stats != null)
             {
-                GameManager.Instance.SavePlayerData(checkpointName, player.transform.position);
+                SaveSystem.SaveGame(stats, player.transform.position, checkpointName);
             }
         }
         saveMenu.SetActive(false);

@@ -20,11 +20,6 @@ public class BridgeCanvas : MonoBehaviour
         ScenesManager.Instance.QuitGame();
     }
 
-    public void CargarPartida()
-    {
-        GameManager.Instance.LoadPlayerData();
-    }
-
     public void NovaPartida()
     {
         SaveManager.DeleteSave();

@@ -4,12 +4,17 @@ using UnityEngine;
 
 public class TestEnemy : MonoBehaviour
 {
+    public PlayerStats playerStats;
 
+    void Awake()
+    {
+        playerStats = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerStats>();
+    }
     void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Player")
         {
-            GameManager.Instance.TakeDamage();
+            playerStats.TakeDamage();
         }
     }
 
