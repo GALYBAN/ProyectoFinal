@@ -3,7 +3,12 @@ guid: 9afd0c71ccf687b40a4deddc47c83cec
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MrCalabazo
+    second: {fileID: 2100000, guid: bd2dd2a8edfd0cf42bff1217b94f8ff2, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -47,8 +52,8 @@ ModelImporter:
     importLights: 1
     nodeNameCollisionStrategy: 1
     fileIdsGeneration: 2
-    swapUVChannels: 0
-    generateSecondaryUV: 0
+    swapUVChannels: 1
+    generateSecondaryUV: 1
     useFileUnits: 1
     keepQuads: 0
     weldVertices: 1
@@ -70,7 +75,7 @@ ModelImporter:
     useFileScale: 1
     strictVertexDataChecks: 0
   tangentSpace:
-    normalSmoothAngle: 60
+    normalSmoothAngle: 61
     normalImportMode: 0
     tangentImportMode: 3
     normalCalculationMode: 4
