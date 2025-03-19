@@ -10,9 +10,13 @@ public class ComboController : MonoBehaviour
     [SerializeField] private float baseDamage = 10f;
     [SerializeField] private float damageMultiplier = 1.2f;
 
-    [Header("Detección de enemigos")]
-    [SerializeField] private float attackRange = 1.5f; // Distancia máxima de ataque
-    [SerializeField] private LayerMask enemyLayer; // Capa para detectar enemigos
+    [Header("Detección de estados")]
+    [SerializeField] private GroundSensor groundSensor;
+    [SerializeField] private PlayerInputs inputs;
+
+    [Header("Cooldowns")]
+    [SerializeField] private float upAttackCooldown = 2f; // Cooldown para ataques hacia arriba
+    private float lastUpAttackTime;
 
     public int comboStep = 0;
     private float lastAttackTime;
@@ -24,6 +28,8 @@ public class ComboController : MonoBehaviour
         movementController = GetComponent<MovementController>();
         playerStats = GetComponent<PlayerStats>();
         anim = GetComponent<Animator>();
+        groundSensor = GetComponent<GroundSensor>();
+        inputs = GetComponent<PlayerInputs>();
     }
 
     void Update()
@@ -32,12 +38,33 @@ public class ComboController : MonoBehaviour
         {
             ResetCombo();
         }
+
+        // Detectar si el jugador está mirando hacia arriba
+        bool lookingUp = inputs.LookUpInput;
+        anim.SetBool("Up", lookingUp);
     }
 
     public void HandleCombo(Vector3 attackDirection)
     {
         if (!canCombo) return;
 
+        // Ataque hacia arriba con cooldown
+        if (anim.GetBool("Up"))
+        {
+            if (Time.time - lastUpAttackTime < upAttackCooldown) 
+            {
+                Debug.Log("UpAttack en cooldown...");
+                return; // Evita ejecutar el ataque si está en cooldown
+            }
+
+            anim.SetTrigger("UpAttack");
+            Debug.Log("Ataque hacia arriba ejecutado");
+
+            lastUpAttackTime = Time.time; // Actualiza el cooldown
+            return;
+        }
+
+        // Lógica normal de combo
         comboStep++;
         if (comboStep > 3)
         {
@@ -46,17 +73,6 @@ public class ComboController : MonoBehaviour
         }
 
         Debug.Log($"Ejecutando combo step {comboStep}");
-
-        // Si hay un enemigo cerca, desactiva Root Motion
-        if (IsEnemyInRange())
-        {
-            anim.applyRootMotion = false;
-            Debug.Log("Enemigo cerca, Root Motion desactivado");
-        }
-        else
-        {
-            anim.applyRootMotion = true;
-        }
 
         movementController.SetAttackState(true, comboMoveSpeedMultiplier, attackDirection);
         movementController.Attack(comboStep);
@@ -87,23 +103,6 @@ public class ComboController : MonoBehaviour
             successfulHits = 0;
         }
     }
-
-    private bool IsEnemyInRange()
-    {
-        RaycastHit hit;
-        Vector3 origin = transform.position + Vector3.up * 1f;
-        Vector3 direction = -transform.right;
-
-        if (Physics.Raycast(origin, direction, out hit, attackRange, enemyLayer))
-        {
-            Debug.DrawRay(origin, direction * attackRange, Color.green, 0.2f);
-            return true;
-        }
-
-        Debug.DrawRay(origin, direction * attackRange, Color.red, 0.2f);
-        return false;
-    }
-
     public void ComboEnd()
     {
         ResetCombo();
@@ -122,19 +121,5 @@ public class ComboController : MonoBehaviour
     public bool IsComboReady()
     {
         return canCombo;
-    }
-
-    void OnDrawGizmos()
-    {
-        Gizmos.color = Color.yellow; // Color de la línea del Raycast
-        Vector3 origin = transform.position + Vector3.up * 1f;
-        Vector3 direction = -transform.right * attackRange;
-
-        // Dibuja una línea para ver el rango de ataque
-        Gizmos.DrawRay(origin, direction);
-
-        // Dibuja una esfera en el extremo para visualizar el alcance máximo
-        Gizmos.color = IsEnemyInRange() ? Color.green : Color.red;
-        Gizmos.DrawSphere(origin + direction, 0.2f);
     }
 }

@@ -1637,12 +1637,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d84e6b130c328a74ea18fff6b7504c6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxManaSlots: 2
-  currentManaSlots: 0
-  manaSlotsUI: []
-  maxHealthSlots: 3
-  currentHealthSlots: 0
-  healthSlotsUI: []
 --- !u!4 &610277756
 Transform:
   m_ObjectHideFlags: 0
