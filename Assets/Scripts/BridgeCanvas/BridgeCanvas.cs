@@ -7,12 +7,12 @@ public class BridgeCanvas : MonoBehaviour
 
     public void Reprendre()
     {
-        ScenesManager.Instance.LoadScene(1);
+        ScenesManager.Instance.LoadSceneWithLoadingScreen("Juego");
     }
 
     public void PantallaInicial()
     {
-        ScenesManager.Instance.LoadScene(0);
+        ScenesManager.Instance.LoadSceneWithLoadingScreen("MenuPrincipal");
     }
 
     public void Sortir()

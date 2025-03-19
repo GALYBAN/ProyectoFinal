@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/MenuPrincipal.unity
     guid: eef608976ed461d4c889c455af0a2cbf
   - enabled: 1
+    path: Assets/Scenes/Cargando.unity
+    guid: 6ba849c5c022b114396d390d0ad746a8
+  - enabled: 1
     path: Assets/Scenes/Juego.unity
     guid: 8124e5870f4fd4c779e7a5f994e84ad1
   - enabled: 0

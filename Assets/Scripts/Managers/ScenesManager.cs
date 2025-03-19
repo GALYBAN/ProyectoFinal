@@ -54,6 +54,12 @@ public class ScenesManager : MonoBehaviour
         SceneManager.LoadScene(sceneIndex);
     }
 
+    public void LoadSceneWithLoadingScreen(string sceneName)
+    {
+        PlayerPrefs.SetString("NextScene", sceneName); // Guardar la próxima escena a cargar
+        SceneManager.LoadScene("Cargando"); // Cargar la escena de carga
+    }
+
     public void QuitGame()
     {
         Application.Quit();
