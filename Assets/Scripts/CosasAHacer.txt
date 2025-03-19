@@ -1,11 +1,4 @@
-Hacer que la textura que brilla se vea por los dos lados
-
-Recuperar mana cada 3 Ataques
-
-Puntos de guardado
-
----------------------
-
 Hacer letras (Has muerto mas chulas)
 
 Menú de pausa
+

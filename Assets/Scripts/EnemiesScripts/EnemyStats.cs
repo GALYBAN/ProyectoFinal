@@ -9,6 +9,7 @@ public class EnemyStats : MonoBehaviour
 
     void Start()
     {
+        slider.maxValue = maxHealth;
         currentHealth = maxHealth;
     }
 
