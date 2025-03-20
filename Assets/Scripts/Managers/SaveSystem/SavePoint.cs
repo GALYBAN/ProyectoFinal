@@ -1,10 +1,14 @@
 using UnityEngine;
+using Cinemachine;
 
 public class SavePoint : MonoBehaviour
 {
     [SerializeField] private string checkpointName;
     [SerializeField] private GameObject saveButtonUI;
     [SerializeField] private GameObject saveMenu;
+    [SerializeField] private CinemachineVirtualCamera virtualCamera;
+    [SerializeField] private int newPriority = 15;
+
     private PlayerInputs inputs;
 
     private bool playerInRange = false;
@@ -23,15 +27,17 @@ public class SavePoint : MonoBehaviour
     {
         if (inputs.InteractInput && playerInRange)
         {
+            virtualCamera.Priority = newPriority;
             OpenSaveMenu();
         }
         else if (inputs.PauseInput && playerInRange)
         {
-            CloseSaveMenu();   
+            CloseSaveMenu();
+            virtualCamera.Priority = 5;   
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         if (other.CompareTag("Player"))
         {
@@ -47,6 +53,7 @@ public class SavePoint : MonoBehaviour
             playerInRange = false;
             saveButtonUI.SetActive(false);
             saveMenu.SetActive(false);
+            virtualCamera.Priority = 5;   
         }
     }
 
