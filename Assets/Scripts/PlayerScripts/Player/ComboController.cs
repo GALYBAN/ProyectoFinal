@@ -14,9 +14,13 @@ public class ComboController : MonoBehaviour
     [SerializeField] private GroundSensor groundSensor;
     [SerializeField] private PlayerInputs inputs;
 
+    [Header("Cooldowns")]
+    [SerializeField] private float upAttackCooldown = 2f;
+    private float lastUpAttackTime;
+
     [Header("Detección de enemigos")]
-    [SerializeField] private float attackRange = 1.5f; // Rango del ataque
-    [SerializeField] private LayerMask enemyLayer; // Capa para detectar enemigos
+    [SerializeField] private float attackRange = 1.5f;
+    [SerializeField] private LayerMask enemyLayer;
 
     public int comboStep = 0;
     private float lastAttackTime;
@@ -38,12 +42,32 @@ public class ComboController : MonoBehaviour
         {
             ResetCombo();
         }
+
+        bool lookingUp = inputs.LookUpInput;
+        anim.SetBool("Up", lookingUp);
     }
 
     public void HandleCombo(Vector3 attackDirection)
     {
         if (!canCombo) return;
 
+        // 🔺 ATAQUE HACIA ARRIBA (UpAttack)
+        if (anim.GetBool("Up"))
+        {
+            if (Time.time - lastUpAttackTime < upAttackCooldown)
+            {
+                Debug.Log("UpAttack en cooldown...");
+                return;
+            }
+
+            anim.SetTrigger("UpAttack");
+            Debug.Log("Ataque hacia arriba ejecutado");
+
+            lastUpAttackTime = Time.time;
+            return;
+        }
+
+        // 🔹 ATAQUE NORMAL (Root Motion se desactiva si hay enemigo en frente)
         comboStep++;
         if (comboStep > 3)
         {
@@ -53,7 +77,6 @@ public class ComboController : MonoBehaviour
 
         Debug.Log($"Ejecutando combo step {comboStep}");
 
-        // Si hay un enemigo en rango, desactivar Root Motion
         if (IsEnemyInFront())
         {
             anim.applyRootMotion = false;
@@ -95,8 +118,8 @@ public class ComboController : MonoBehaviour
     private bool IsEnemyInFront()
     {
         RaycastHit hit;
-        Vector3 origin = transform.position + Vector3.up * 1f; // Ray desde el pecho
-        Vector3 direction = -transform.right; // Mirando hacia adelante
+        Vector3 origin = transform.position + Vector3.up * 1f;
+        Vector3 direction = -transform.right;
 
         bool enemyDetected = Physics.Raycast(origin, direction, out hit, attackRange, enemyLayer);
 
@@ -136,7 +159,7 @@ public class ComboController : MonoBehaviour
         movementController.SetAttackState(false, 1f, Vector3.zero);
         canCombo = true;
 
-        anim.applyRootMotion = true; // Asegurar que Root Motion vuelva a activarse al resetear el combo
+        anim.applyRootMotion = true;
     }
 
     public bool IsComboReady()
