@@ -5,7 +5,6 @@ using Cinemachine;
 public class NoiseEvent : MonoBehaviour
 {
     [SerializeField] private CinemachineVirtualCamera cinemachineVirtual;
-    [SerializeField] private float noiseGain = 1f;  // Máxima intensidad del ruido
     [SerializeField] private float noiseDuration = 1f;  // Duración para reducir el ruido
 
     public void TriggerNoise(float noiseAmount)
