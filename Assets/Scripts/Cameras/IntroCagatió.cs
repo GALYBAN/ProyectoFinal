@@ -6,16 +6,25 @@ public class IntroCagatió : MonoBehaviour
 {
     [SerializeField] private GameObject[] lightsCagatio;
     [SerializeField] private GameObject[] lightsScene;
-    [SerializeField] private GameObject cristal;
-    [SerializeField] private Material cristalMaterial;
     [SerializeField] private GameObject cagatio;
     [SerializeField] private Animator animator;
+    [SerializeField] private Renderer cristalMaterial;
+    [SerializeField] private Color emissionColor;
+    [SerializeField] private float emissionIntensity = 17.5f;
+
+
+    private MaterialPropertyBlock propBlock;
 
     void Awake()
     {
         cagatio = GameObject.Find("CagatióUnity");
         animator = cagatio.GetComponent<Animator>();
-        cristalMaterial = cristal.GetComponent<Renderer>().materials[0];
+
+        propBlock = new MaterialPropertyBlock();
+        cristalMaterial.GetPropertyBlock(propBlock);
+
+        cristalMaterial.material.EnableKeyword("_EMISSION");
+
     }
 
     void OnTriggerEnter(Collider other)
@@ -44,7 +53,8 @@ public class IntroCagatió : MonoBehaviour
 
     public void ActivateCristals()
     {
-        float emissionIntensity = cristalMaterial.GetFloat("_EmissionIntensity");
-        cristalMaterial.SetFloat("_EmissionIntensity", 17.3f);
+        Color finalEmission = emissionColor * Mathf.LinearToGammaSpace(emissionIntensity);
+        propBlock.SetColor("_EmissionColor", finalEmission);
+        cristalMaterial.SetPropertyBlock(propBlock);
     }
 }

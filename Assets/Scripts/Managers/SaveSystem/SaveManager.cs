@@ -7,10 +7,11 @@ public class SaveManager : MonoBehaviour
 
     public static void SaveGame(Vector3 playerPosition, int playerHealth, int playerMana, string checkpoint)
     {
+        // Siempre sobrescribimos el archivo de guardado con los datos más recientes
         SaveData data = new SaveData(playerPosition, playerHealth, playerMana, checkpoint);
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(savePath, json);
-        Debug.Log("Juego guardado en: " + savePath);
+        Debug.Log($"Juego guardado en: {checkpoint}");
     }
 
     public static SaveData LoadGame()
@@ -19,7 +20,7 @@ public class SaveManager : MonoBehaviour
         {
             string json = File.ReadAllText(savePath);
             SaveData data = JsonUtility.FromJson<SaveData>(json);
-            Debug.Log("Juego cargado con éxito.");
+            Debug.Log($"Juego cargado desde: {data.lastCheckpoint}");
             return data;
         }
         Debug.LogWarning("No se encontró archivo de guardado.");

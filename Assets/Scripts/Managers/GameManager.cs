@@ -31,4 +31,16 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("Nivel1"); // Asegúrate de usar el nombre correcto de la escena
     }
 
+    public void LoadPlayerData()
+    {
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        PlayerStats stats = player.GetComponent<PlayerStats>();
+
+        if (player != null && stats != null)
+        {
+            SaveSystem.LoadGame(stats, player);
+        }
+    }
+
+
 }

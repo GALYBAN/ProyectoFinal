@@ -1,12 +1,10 @@
 using UnityEngine;
 
-public class SaveSystem : MonoBehaviour
+public static class SaveSystem
 {
-
-
-    
     public static void SaveGame(PlayerStats playerStats, Vector3 playerPosition, string checkpointName)
     {
+        // Guardamos siempre en el mismo archivo, pero actualizando el último checkpoint
         SaveManager.SaveGame(playerPosition, playerStats.currentHealthSlots, playerStats.currentManaSlots, checkpointName);
         Debug.Log("Juego guardado en: " + checkpointName);
     }

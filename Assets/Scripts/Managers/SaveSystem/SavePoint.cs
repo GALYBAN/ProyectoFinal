@@ -10,13 +10,19 @@ public class SavePoint : MonoBehaviour
     [SerializeField] private int newPriority = 15;
 
     private PlayerInputs inputs;
-
     private bool playerInRange = false;
 
     private void Awake()
     {
         inputs = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerInputs>();
+
+        // Generar un nombre único si no tiene uno asignado
+        if (string.IsNullOrEmpty(checkpointName))
+        {
+            checkpointName = gameObject.name + "_" + transform.position.x + "_" + transform.position.y;
+        }
     }
+
     private void Start()
     {
         saveButtonUI.SetActive(false);
@@ -33,7 +39,7 @@ public class SavePoint : MonoBehaviour
         else if (inputs.PauseInput && playerInRange)
         {
             CloseSaveMenu();
-            virtualCamera.Priority = 5;   
+            virtualCamera.Priority = 5;
         }
     }
 
@@ -53,7 +59,7 @@ public class SavePoint : MonoBehaviour
             playerInRange = false;
             saveButtonUI.SetActive(false);
             saveMenu.SetActive(false);
-            virtualCamera.Priority = 5;   
+            virtualCamera.Priority = 5;
         }
     }
 
@@ -71,9 +77,11 @@ public class SavePoint : MonoBehaviour
         {
             GameObject player = GameObject.FindGameObjectWithTag("Player");
             PlayerStats stats = player.GetComponent<PlayerStats>();
+
             if (player != null && stats != null)
             {
                 SaveSystem.SaveGame(stats, player.transform.position, checkpointName);
+                Debug.Log($"Partida guardada en: {checkpointName}");
             }
         }
         saveMenu.SetActive(false);
