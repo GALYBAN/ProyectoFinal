@@ -10,15 +10,17 @@ public class Horse : MonoBehaviour
     public Transform pointB;
     private Transform targetPoint;
     public float detectionRange = 5f;
+    public float visionAngle = 60f;
     public float chargeSpeed = 10f;
     public float patrolSpeed = 2f;
     public float chargeDuration = 2f;
+    public LayerMask playerLayer;
 
     private Transform player;
     private NavMeshAgent agent;
     private bool isCharging = false;
     private float chargeTimer = 0f;
-
+    
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -57,12 +59,24 @@ public class Horse : MonoBehaviour
 
     void DetectPlayer()
     {
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.right, out hit, detectionRange))
+        Vector3 directionToPlayer = (player.position - transform.position).normalized;
+        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+
+        if (distanceToPlayer < detectionRange)
         {
-            if (hit.collider.CompareTag("Player"))
+            float angle = Vector3.Angle(transform.forward, directionToPlayer);
+
+            if (angle < visionAngle / 2f)
             {
-                currentState = EnemyState.Chasing;
+                RaycastHit hit;
+                if (Physics.Raycast(transform.position + Vector3.up * 1f, directionToPlayer, out hit, detectionRange, playerLayer))
+                {
+                    if (hit.collider.CompareTag("Player"))
+                    {
+                        Debug.Log("Jugador detectado, cambiando a Chasing!");
+                        currentState = EnemyState.Chasing;
+                    }
+                }
             }
         }
     }
@@ -83,7 +97,8 @@ public class Horse : MonoBehaviour
     {
         if (isCharging)
         {
-            agent.SetDestination(transform.position + transform.right * chargeSpeed);
+            Vector3 chargeDirection = (player.position - transform.position).normalized;
+            agent.velocity = chargeDirection * chargeSpeed;
             chargeTimer -= Time.deltaTime;
             if (chargeTimer <= 0)
             {
@@ -93,6 +108,26 @@ public class Horse : MonoBehaviour
                 targetPoint = Vector3.Distance(transform.position, pointA.position) < Vector3.Distance(transform.position, pointB.position) ? pointB : pointA;
                 agent.SetDestination(targetPoint.position);
             }
+        }
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, detectionRange);
+
+        Vector3 leftBoundary = Quaternion.Euler(0, -visionAngle / 2, 0) * transform.forward * detectionRange;
+        Vector3 rightBoundary = Quaternion.Euler(0, visionAngle / 2, 0) * transform.forward * detectionRange;
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(transform.position, transform.position + leftBoundary);
+        Gizmos.DrawLine(transform.position, transform.position + rightBoundary);
+
+        if (player != null)
+        {
+            Vector3 directionToPlayer = (player.position - transform.position).normalized;
+            Gizmos.color = Color.green;
+            Gizmos.DrawRay(transform.position + Vector3.up * 1f, directionToPlayer * detectionRange);
         }
     }
 }
