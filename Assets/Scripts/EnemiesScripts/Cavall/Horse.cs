@@ -14,12 +14,14 @@ public class Horse : MonoBehaviour
     public float chargeSpeed = 10f;
     public float patrolSpeed = 2f;
     public float chargeDuration = 2f;
+    public float chargeDistance = 5f; // Distancia fija de embestida
     public LayerMask playerLayer;
 
     private Transform player;
     private NavMeshAgent agent;
     private bool isCharging = false;
     private float chargeTimer = 0f;
+    private Vector3 chargeTarget;
     
     void Start()
     {
@@ -90,6 +92,11 @@ public class Horse : MonoBehaviour
             isCharging = true;
             chargeTimer = chargeDuration;
             agent.speed = chargeSpeed;
+            
+            // Definir un punto de carga basado solo en el eje X (movimiento 2D)
+            float directionX = Mathf.Sign(player.position.x - transform.position.x);
+            chargeTarget = new Vector3(transform.position.x + directionX * chargeDistance, transform.position.y, transform.position.z);
+            agent.SetDestination(chargeTarget);
         }
     }
 
@@ -97,10 +104,7 @@ public class Horse : MonoBehaviour
     {
         if (isCharging)
         {
-            Vector3 chargeDirection = (player.position - transform.position).normalized;
-            agent.velocity = chargeDirection * chargeSpeed;
-            chargeTimer -= Time.deltaTime;
-            if (chargeTimer <= 0)
+            if (!agent.pathPending && agent.remainingDistance < 0.5f)
             {
                 isCharging = false;
                 currentState = EnemyState.Patrolling;
