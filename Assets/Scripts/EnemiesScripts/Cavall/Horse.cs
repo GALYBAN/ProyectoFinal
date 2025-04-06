@@ -23,6 +23,13 @@ public class Horse : MonoBehaviour
     private float chargeTimer = 0f;
     private Vector3 chargeTarget;
     
+
+    void Awake()
+    {
+        pointA = GameObject.Find("EnemySpawn1").GetComponent<Transform>();
+        pointB = GameObject.Find("EnemySpawn2").GetComponent<Transform>();
+    }
+    
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();

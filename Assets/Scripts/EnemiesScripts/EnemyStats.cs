@@ -5,6 +5,7 @@ public class EnemyStats : MonoBehaviour
 {
     public float maxHealth = 50f;
     private float currentHealth;
+    public Cagatió jefe;
     [SerializeField] private Slider slider;
 
     void Start()
@@ -32,6 +33,12 @@ public class EnemyStats : MonoBehaviour
     private void Die()
     {
         Debug.Log("Enemigo derrotado");
-        Destroy(gameObject); // Elimina al enemigo
+        Destroy(transform.parent.gameObject); // Elimina al enemigo
+    }
+    // Cuando el enemigo muere:
+    public void Morir()
+    {
+        jefe?.NotificarMuerte(); // Notifica al jefe si está presente
+        Destroy(gameObject);
     }
 }

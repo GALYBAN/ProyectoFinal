@@ -12488,3 +12488,10 @@ AnimationClip:
     floatParameter: 10
     intParameter: 0
     messageOptions: 0
+  - time: 10.733334
+    functionName: FinalizarIntro
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0

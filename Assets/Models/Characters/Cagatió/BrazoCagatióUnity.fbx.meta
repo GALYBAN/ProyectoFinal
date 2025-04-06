@@ -3,7 +3,12 @@ guid: 659d32b293eca4e4ea4d7ba4d688b697
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Brazo
+    second: {fileID: 2100000, guid: a6a988fe4d9633b43ba738cfc56db87d, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

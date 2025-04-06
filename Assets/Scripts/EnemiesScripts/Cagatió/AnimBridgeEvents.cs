@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class AnimBridgeEvents : MonoBehaviour
 {
+
+    public Cagatió jefe;
+    public Animator introAnimator;
+
+    public delegate void ActivarJefe();
+    public static event ActivarJefe OnActivarJefe;
     [SerializeField] private IntroCagatió cagatio;
 
     public void CagatioLights()
@@ -19,6 +25,12 @@ public class AnimBridgeEvents : MonoBehaviour
     public void Cristals()
     {
         cagatio.ActivateCristals();
+    }
+    
+    // Este método será llamado por un Animation Event
+    public void FinalizarIntro()
+    {
+        OnActivarJefe?.Invoke();
     }
 
 }
