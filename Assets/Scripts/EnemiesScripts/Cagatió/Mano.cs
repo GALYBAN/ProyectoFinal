@@ -1,53 +1,138 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody), typeof(Collider))]
 public class Mano : MonoBehaviour
 {
-    // Velocidad a la que se mueve la mano
-    public float velocidadMovimiento = 5f;
+    [Header("Movement Settings")]
+    public float horizontalSpeed = 8f;
+    public float fallSpeed = 15f;
+    public float startingHeight = 15f;
+    public float fallActivationDistance = 3f;
 
-    // Velocidad a la que cae la mano
-    public float velocidadCaída = 10f;
+    [Header("Collision Settings")]
+    public LayerMask groundLayer;
+    public LayerMask playerLayer;
+    public float destroyDelay = 0.1f;
+    public GameObject impactEffect;
 
-    // Distancia mínima para caer hacia el jugador
-    public float distanciaCaida = 5f;
+    public GameObject player;
+    private bool isActive = false;
+    private bool isFalling = false;
+    private Rigidbody rb;
+    private Collider col;
 
-    // Referencia al jugador
-    public GameObject jugador;
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+        col = GetComponent<Collider>();
+        ConfigurePhysics();
+    }
 
-    // Estado de la mano
-    bool isActivada = false;
+    void Start()
+    {
+        player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null) Debug.LogError("Player not found!");
+
+        transform.position = new Vector3(
+            transform.position.x, 
+            startingHeight, 
+            transform.position.z
+        );
+    }
 
     void Update()
     {
-        if (isActivada)
-        {
-            // Mover la mano hacia el jugador desde el cielo
-            transform.position = Vector3.MoveTowards(transform.position, new Vector3(jugador.transform.position.x, transform.position.y, jugador.transform.position.z), velocidadMovimiento * Time.deltaTime);
+        if (!isActive) return;
 
-            // Caer hacia el jugador cuando esté cerca
-            if (Vector3.Distance(transform.position, jugador.transform.position) < distanciaCaida)
-            {
-                transform.position -= new Vector3(0f, velocidadCaída * Time.deltaTime, 0f);
-            }
+        if (!isFalling)
+        {
+            MoveHorizontally();
         }
+        else
+        {
+            FallDown();
+        }
+    }
+
+    void ConfigurePhysics()
+    {
+        rb.isKinematic = false;
+        rb.useGravity = false;
+        rb.constraints = RigidbodyConstraints.FreezeRotation;
+        col.isTrigger = false; // Importante para colisiones sólidas
+    }
+
+    void MoveHorizontally()
+    {
+        if (player == null) return;
+
+        Vector3 targetPos = new Vector3(
+            player.transform.position.x,
+            startingHeight,
+            player.transform.position.z
+        );
+
+        transform.position = Vector3.MoveTowards(
+            transform.position,
+            targetPos,
+            horizontalSpeed * Time.deltaTime
+        );
+
+        // Check distance to start falling
+        float horizontalDistance = Vector2.Distance(
+            new Vector2(transform.position.x, transform.position.z),
+            new Vector2(player.transform.position.x, player.transform.position.z)
+        );
+
+        if (horizontalDistance < fallActivationDistance)
+        {
+            isFalling = true;
+        }
+    }
+
+    void FallDown()
+    {
+        rb.velocity = Vector3.down * fallSpeed;
     }
 
     void OnCollisionEnter(Collision collision)
     {
-        // Si la mano choca con el jugador, infligir daño
-        if (collision.gameObject.CompareTag("Jugador"))
+        // Verificar por layer primero (más eficiente)
+        int collisionLayer = collision.gameObject.layer;
+        
+        if (groundLayer == (groundLayer | (1 << collisionLayer)))
         {
-            collision.gameObject.GetComponent<PlayerStats>().TakeDamage();
+            DestroyHand();
         }
-
-        // Destruir la mano
-        Destroy(gameObject);
+        else if (playerLayer == (playerLayer | (1 << collisionLayer)))
+        {
+            DealDamage(collision.gameObject);
+            DestroyHand();
+        }
     }
 
-    public void Activar()
+    void DealDamage(GameObject playerObj)
     {
-        isActivada = true;
+        PlayerStats stats = playerObj.GetComponent<PlayerStats>();
+        if (stats != null)
+        {
+            stats.TakeDamage();
+            Debug.Log("Player damaged by hand!");
+        }
+    }
+
+    void DestroyHand()
+    {
+        if (impactEffect != null)
+        {
+            Instantiate(impactEffect, transform.position, Quaternion.identity);
+        }
+        
+        Destroy(gameObject, destroyDelay);
+    }
+
+    public void Activate()
+    {
+        isActive = true;
     }
 }

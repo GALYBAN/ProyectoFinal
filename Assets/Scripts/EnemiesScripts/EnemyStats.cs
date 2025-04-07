@@ -19,26 +19,35 @@ public class EnemyStats : MonoBehaviour
         slider.value = currentHealth;
     }
 
+    // EnemyStats.cs
+    private void Die()
+    {
+        // Debug importante para verificar
+        Debug.Log($"Enemigo muriendo - Vida: {currentHealth} - Referencia jefe: {(jefe != null ? "EXISTE" : "NULL")}");
+
+        // Notificar PRIMERO al jefe
+        if (jefe != null)
+        {
+            jefe.NotificarMuerte();
+        }
+        else
+        {
+            Debug.LogError("¡No hay referencia al jefe!");
+        }
+
+        // Destruir el objeto
+        Destroy(transform.parent.gameObject); // Cambiado a destruir solo el enemigo, no el padre
+}
+
     public void TakeDamage(float damage)
     {
         currentHealth -= damage;
-        Debug.Log($"Enemigo recibió {damage} de daño. Vida restante: {currentHealth}");
+        Debug.Log($"Enemigo recibió {damage} de daño. Vida: {currentHealth}");
 
         if (currentHealth <= 0)
         {
+            Debug.Log("Enemigo va a morir");
             Die();
         }
-    }
-
-    private void Die()
-    {
-        Debug.Log("Enemigo derrotado");
-        Destroy(transform.parent.gameObject); // Elimina al enemigo
-    }
-    // Cuando el enemigo muere:
-    public void Morir()
-    {
-        jefe?.NotificarMuerte(); // Notifica al jefe si está presente
-        Destroy(gameObject);
     }
 }

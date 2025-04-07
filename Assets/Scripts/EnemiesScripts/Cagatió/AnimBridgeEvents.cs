@@ -10,7 +10,9 @@ public class AnimBridgeEvents : MonoBehaviour
 
     public delegate void ActivarJefe();
     public static event ActivarJefe OnActivarJefe;
+    public AudioClip bossFightMusic;
     [SerializeField] private IntroCagatió cagatio;
+    
 
     public void CagatioLights()
     {
@@ -32,5 +34,13 @@ public class AnimBridgeEvents : MonoBehaviour
     {
         OnActivarJefe?.Invoke();
     }
+
+    public void Intro()
+    {
+        // Cambiar a música de jefe al activarlo
+        BSOManager.Instance?.PlayTrack(bossFightMusic);
+        
+    }
+    
 
 }
