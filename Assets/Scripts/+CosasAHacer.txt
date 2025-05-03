@@ -3,11 +3,11 @@ Mejorar IA Cagatió
 IA Espantaocells
 
 ----- Vertical Slide 1er Nivel -----
-Animaciones Cleo túnica
-Implementación Cleo túnica
-Serelion Animación
-Cleo Animación Transformación
-Cleo movement CTRL
+Animaciones Cleo túnica ***
+Implementación Cleo túnica ***
+Serelion Animación ***
+Cleo Animación Transformación ***
+Cleo movement CTRL ***
 Diálogos
 Hacer la casa de SantJordi interactuable
 Zona tutorial
