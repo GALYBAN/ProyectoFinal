@@ -62,8 +62,5 @@ public class CleoController : MonoBehaviour
 
         playerVelocity.y += gravityValue * Time.deltaTime;
         controller.Move(playerVelocity * Time.deltaTime);
-
-        // Set grounded animation parameter
-        animator.SetBool("IsGrounded", groundedPlayer);
     }
 }

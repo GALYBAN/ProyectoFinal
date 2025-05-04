@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a05b93a15d59a04cb9746ed1bba5d9f, type: 3}
+  m_Name: CasaSantJordi
+  m_EditorClassIdentifier: 
+  dialogueLines:
+  - characterName: Cleo
+    text: "Oh! Qu\xE8 \xE9s aix\xF2?"
+    voiceClip: {fileID: 8300000, guid: ebe5691752cb9d04d9917784e1a5dfe2, type: 3}
+    displayTime: 1.5
+    textColor: {r: 0, g: 0, b: 0, a: 1}
+  - characterName: Serelion
+    text: Pio, Pio, Cruc, Cruc.
+    voiceClip: {fileID: 8300000, guid: da24fb2b4a2996243b5c730889005166, type: 3}
+    displayTime: 1.5
+    textColor: {r: 0, g: 0, b: 0, a: 1}
+  - characterName: Cleo
+    text: "Se que m'intentes dir algo, per\xF2 no entec que em dius."
+    voiceClip: {fileID: 8300000, guid: 0dd1eea5672312544aeea7dc418cfe03, type: 3}
+    displayTime: 4
+    textColor: {r: 0, g: 0, b: 0, a: 1}
+  - characterName: Serelion
+    text: Hola, ara m'escoltes?
+    voiceClip: {fileID: 8300000, guid: 8e222ee3a8c383340962b1ff2ae9a403, type: 3}
+    displayTime: 2
+    textColor: {r: 0, g: 0, b: 0, a: 1}
+  - characterName: Cleo
+    text: "Qu\xE8?"
+    voiceClip: {fileID: 8300000, guid: b6a22d0ae51f90440a11676b52f5420e, type: 3}
+    displayTime: 0.5
+    textColor: {r: 0, g: 0, b: 0, a: 1}
+  - characterName: Serelion
+    text: "S\xF3c Serelion, t'estic parlant telep\xE0ticament i necessito que m'ajudis
+      a arreglar aquesta hist\xF2ria"
+    voiceClip: {fileID: 8300000, guid: 7d1f74d9949c75040b4f44f32448e3f3, type: 3}
+    displayTime: 6
+    textColor: {r: 0, g: 0, b: 0, a: 1}
+  - characterName: Cleo
+    text: "Qu\xE8 vols dir?"
+    voiceClip: {fileID: 8300000, guid: a4ec148d72ffb274c9cc25f55b7337d0, type: 3}
+    displayTime: 2
+    textColor: {r: 0, g: 0, b: 0, a: 1}
+  - characterName: Serelion
+    text: "S\xF3c un ent creat a partir de la feli\xE7itat de les hist\xF2ries, i
+      la meva n\xE8mesis, Desmos, ha destruit totes les hist\xF2ries, com ve a ser
+      l'hist\xF2ria en la qual Sant Jordi et salva del drac."
+    voiceClip: {fileID: 8300000, guid: 21d87d3569e236946a924772527352e9, type: 3}
+    displayTime: 10
+    textColor: {r: 0, g: 0, b: 0, a: 1}
+  - characterName: Cleo
+    text: "Qu\xE8? Per aix\xF2 no trobava a Sant Jordi?"
+    voiceClip: {fileID: 8300000, guid: d74e99572fe98b04185c2183d6196f6e, type: 3}
+    displayTime: 2
+    textColor: {r: 0, g: 0, b: 0, a: 1}
+  - characterName: Cleo
+    text: "Desmos... Ha fet desapar\xE8ixer a Sant Jordi? I que la gent m'oblid\xE8s?"
+    voiceClip: {fileID: 8300000, guid: af8cb87f38912ea40a39246c01d163ab, type: 3}
+    displayTime: 4
+    textColor: {r: 0, g: 0, b: 0, a: 1}
+  - characterName: Serelion
+    text: "T\xE8cnicament, volia que els dos deixesiu d'existir, per\xF2 amb el poder
+      que tinc he aconseguit que tu no desapareguis."
+    voiceClip: {fileID: 8300000, guid: 290fc6d90b4cfcb43bc05bc984f56305, type: 3}
+    displayTime: 6
+    textColor: {r: 0, g: 0, b: 0, a: 1}
+  - characterName: Cleo
+    text: "Vale, no fa falta que em diguis m\xE9s... Ja s\xE9 que vols dir, i t'ajudaria.
+      Vull salvar Sant Jordi, per\xF2 per molt que en sapigui utilitzar l'espassa,
+      no s\xF3c tan forta."
+    voiceClip: {fileID: 8300000, guid: 7ab60e4671c742343a4a0fe10500d016, type: 3}
+    displayTime: 10
+    textColor: {r: 0, g: 0, b: 0, a: 1}
+  - characterName: Serelion
+    text: "Tranquil\xB7la, et donar\xE9 el meu poder, i em convertir\xE9 en la teva
+      espasa i armadura. Junts haurem de derrotar tots els \xE9ssers que no siguin
+      d'aqu\xED i recuperar l'hist\xF2ria original."
+    voiceClip: {fileID: 8300000, guid: a9e22e57c829259448afe19fce2a2ede, type: 3}
+    displayTime: 10
+    textColor: {r: 0, g: 0, b: 0, a: 1}

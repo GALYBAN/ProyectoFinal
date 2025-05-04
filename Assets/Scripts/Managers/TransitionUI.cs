@@ -12,11 +12,10 @@ public class TransitionUI : MonoBehaviour
     [Header("Flash Settings")]
     [SerializeField] private float flashDuration = 0.5f;
     [SerializeField] private float textFadeInDuration = 1f;
-    [SerializeField] private float textDisplayDuration = 2f;
     [SerializeField] private float textFadeOutDuration = 1f;
     
-    [Header("Text Settings")]
-    [SerializeField] private string[] transitionTexts;
+    [Header("Dialogue Settings")]
+    [SerializeField] private DialogueData transitionDialogue;
     
     private Color flashColor = new Color(1f, 1f, 1f, 0f);
     private Color textColor = new Color(0f, 0f, 0f, 0f);
@@ -44,16 +43,24 @@ public class TransitionUI : MonoBehaviour
         yield return StartCoroutine(FadeFlash(0f, 1f, flashDuration));
         
         // Show all texts in sequence
-        for (int i = 0; i < transitionTexts.Length; i++)
+        for (int i = 0; i < transitionDialogue.dialogueLines.Length; i++)
         {
             currentTextIndex = i;
-            transitionText.text = transitionTexts[i];
+            DialogueLine currentLine = transitionDialogue.dialogueLines[i];
+            transitionText.text = currentLine.text;
+            transitionText.color = currentLine.textColor;
+            
+            // Play voice clip if available
+            if (currentLine.voiceClip != null)
+            {
+                SOUNDManager.Instance.PlayVoiceClip(currentLine.voiceClip);
+            }
             
             // Fade in text
             yield return StartCoroutine(FadeText(0f, 1f, textFadeInDuration));
             
-            // Hold text
-            yield return new WaitForSeconds(textDisplayDuration);
+            // Hold text for the specified display time
+            yield return new WaitForSeconds(currentLine.displayTime);
             
             // Fade out text
             yield return StartCoroutine(FadeText(1f, 0f, textFadeOutDuration));
@@ -86,10 +93,10 @@ public class TransitionUI : MonoBehaviour
             elapsedTime += Time.deltaTime;
             float alpha = Mathf.Lerp(startAlpha, endAlpha, elapsedTime / duration);
             textColor.a = alpha;
-            transitionText.color = textColor;
+            transitionText.color = new Color(transitionText.color.r, transitionText.color.g, transitionText.color.b, alpha);
             yield return null;
         }
         textColor.a = endAlpha;
-        transitionText.color = textColor;
+        transitionText.color = new Color(transitionText.color.r, transitionText.color.g, transitionText.color.b, endAlpha);
     }
 } 
