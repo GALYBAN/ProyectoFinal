@@ -21,7 +21,7 @@ MonoBehaviour:
   - characterName: Serelion
     text: Pio, Pio, Cruc, Cruc.
     voiceClip: {fileID: 8300000, guid: da24fb2b4a2996243b5c730889005166, type: 3}
-    displayTime: 1.5
+    displayTime: 2
     textColor: {r: 0, g: 0, b: 0, a: 1}
   - characterName: Cleo
     text: "Se que m'intentes dir algo, per\xF2 no entec que em dius."

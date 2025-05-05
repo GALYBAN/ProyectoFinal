@@ -25,11 +25,12 @@ public class DialogueSystem : MonoBehaviour
 
     [Header("Settings")]
     public float textSpeed = 0.05f;
-    public float autoAdvanceDelay = 2f;
+    public float autoAdvanceDelay = 0.5f;  // Tiempo entre líneas
 
     private Queue<DialogueLine> dialogueQueue = new Queue<DialogueLine>();
     private bool isTyping = false;
     private Coroutine typingCoroutine;
+    private Coroutine dialogueCoroutine;
 
     private void Awake()
     {
@@ -90,6 +91,18 @@ public class DialogueSystem : MonoBehaviour
             return;
         }
 
+        Debug.Log($"Number of lines to display: {lines.Length}");
+        Debug.Log($"First line character: {lines[0].characterName}");
+        Debug.Log($"First line text: {lines[0].text}");
+        Debug.Log($"First line display time: {lines[0].displayTime}");
+
+        // Detener cualquier diálogo actual
+        if (dialogueCoroutine != null)
+        {
+            Debug.Log("Stopping existing dialogue coroutine");
+            StopCoroutine(dialogueCoroutine);
+        }
+
         Debug.Log($"Starting dialogue with {lines.Length} lines");
         dialogueQueue.Clear();
         foreach (DialogueLine line in lines)
@@ -97,84 +110,111 @@ public class DialogueSystem : MonoBehaviour
             dialogueQueue.Enqueue(line);
         }
         dialoguePanel.SetActive(true);
-        DisplayNextLine();
+        
+        // Iniciar la secuencia de diálogo
+        dialogueCoroutine = StartCoroutine(PlayDialogueSequence());
     }
 
-    public void DisplayNextLine()
+    private IEnumerator PlayDialogueSequence()
     {
-        Debug.Log("DisplayNextLine called");
-        
-        if (isTyping)
+        Debug.Log("PlayDialogueSequence started");
+        while (dialogueQueue.Count > 0)
         {
-            StopCoroutine(typingCoroutine);
-            isTyping = false;
-            dialogueText.text = dialogueQueue.Peek().text;
-            return;
-        }
+            DialogueLine currentLine = dialogueQueue.Dequeue();
+            Debug.Log($"Displaying line: {currentLine.text}");
 
-        if (dialogueQueue.Count == 0)
-        {
-            EndDialogue();
-            return;
-        }
-
-        DialogueLine currentLine = dialogueQueue.Dequeue();
-        Debug.Log($"Displaying line: {currentLine.text}");
-        
-        if (characterNameText != null)
-        {
-            characterNameText.text = currentLine.characterName;
-        }
-        else
-        {
-            Debug.LogError("CharacterNameText is not assigned!");
-        }
-
-        if (dialogueText != null)
-        {
-            dialogueText.color = currentLine.textColor;
-        }
-        else
-        {
-            Debug.LogError("DialogueText is not assigned!");
-        }
-
-        if (currentLine.voiceClip != null)
-        {
-            if (SOUNDManager.Instance != null)
+            // Configurar el nombre del personaje
+            if (characterNameText != null)
             {
-                SOUNDManager.Instance.PlayVoiceClip(currentLine.voiceClip);
+                characterNameText.text = currentLine.characterName;
+                Debug.Log($"Setting character name to: {currentLine.characterName}");
             }
             else
             {
-                Debug.LogError("SOUNDManager.Instance is null!");
+                Debug.LogError("characterNameText is null!");
             }
+
+            // Configurar el color del texto
+            if (dialogueText != null)
+            {
+                dialogueText.color = currentLine.textColor;
+                Debug.Log($"Setting text color to: {currentLine.textColor}");
+            }
+            else
+            {
+                Debug.LogError("dialogueText is null!");
+            }
+
+            // Reproducir el clip de voz si existe
+            if (currentLine.voiceClip != null)
+            {
+                if (SOUNDManager.Instance != null)
+                {
+                    Debug.Log($"Playing voice clip: {currentLine.voiceClip.name}");
+                    SOUNDManager.Instance.PlayVoiceClip(currentLine.voiceClip);
+                    // Esperar un pequeño delay para asegurar que el audio comienza
+                    yield return new WaitForSeconds(0.1f);
+                }
+                else
+                {
+                    Debug.LogError("SOUNDManager.Instance is null!");
+                }
+            }
+            else
+            {
+                Debug.Log("No voice clip for this line");
+            }
+
+            // Mostrar el texto con efecto de escritura
+            typingCoroutine = StartCoroutine(TypeText(currentLine.text));
+            yield return typingCoroutine;
+
+            Debug.Log($"Waiting for display time: {currentLine.displayTime} seconds");
+            // Esperar el tiempo de visualización especificado en el DialogueLine
+            yield return new WaitForSeconds(currentLine.displayTime);
+
+            Debug.Log($"Waiting for auto advance delay: {autoAdvanceDelay} seconds");
+            // Esperar un pequeño delay entre líneas
+            yield return new WaitForSeconds(autoAdvanceDelay);
         }
 
-        typingCoroutine = StartCoroutine(TypeText(currentLine.text));
+        // Cuando se acaba el diálogo
+        EndDialogue();
     }
 
     private IEnumerator TypeText(string text)
     {
         isTyping = true;
         dialogueText.text = "";
+        
         foreach (char letter in text.ToCharArray())
         {
             dialogueText.text += letter;
             yield return new WaitForSeconds(textSpeed);
         }
+        
         isTyping = false;
-
-        if (dialogueQueue.Count > 0)
-        {
-            yield return new WaitForSeconds(autoAdvanceDelay);
-            DisplayNextLine();
-        }
     }
 
     private void EndDialogue()
     {
         Debug.Log("Ending dialogue");
         dialoguePanel.SetActive(false);
+    }
+
+    // Método para saltar al siguiente diálogo
+    public void SkipToNextLine()
+    {
+        if (isTyping)
+        {
+            StopCoroutine(typingCoroutine);
+            isTyping = false;
+            dialogueText.text = dialogueQueue.Peek().text;
+        }
+        else if (dialogueQueue.Count > 0)
+        {
+            StopCoroutine(dialogueCoroutine);
+            dialogueCoroutine = StartCoroutine(PlayDialogueSequence());
+        }
     }
 } 

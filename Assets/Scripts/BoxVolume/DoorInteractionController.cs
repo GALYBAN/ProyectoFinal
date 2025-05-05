@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using System.Collections;
 
 public class DoorInteractionController : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class DoorInteractionController : MonoBehaviour
     private bool isPlayerInRange = false;
     private GameObject currentPlayer;
     private PlayerInputs playerInputs;
+    private bool isTeleporting = false; // Nueva variable para controlar el estado de teletransporte
 
     private void Start()
     {
@@ -37,7 +39,7 @@ public class DoorInteractionController : MonoBehaviour
 
     private void Update()
     {
-        if (isPlayerInRange && playerInputs != null && playerInputs.InteractInput)
+        if (isPlayerInRange && playerInputs != null && playerInputs.InteractInput && !isTeleporting)
         {
             TeleportPlayer();
         }
@@ -67,6 +69,7 @@ public class DoorInteractionController : MonoBehaviour
             isPlayerInRange = false;
             currentPlayer = null;
             playerInputs = null;
+            isTeleporting = false; // Resetear el estado de teletransporte
             
             if (interactionPrompt != null)
             {
@@ -79,8 +82,10 @@ public class DoorInteractionController : MonoBehaviour
 
     private void TeleportPlayer()
     {
-        if (currentPlayer != null && teleportPoint != null)
+        if (currentPlayer != null && teleportPoint != null && !isTeleporting)
         {
+            isTeleporting = true; // Marcar que estamos en proceso de teletransporte
+            
             // Desactivar el CharacterController temporalmente para permitir la teletransportación
             CharacterController characterController = currentPlayer.GetComponent<CharacterController>();
             if (characterController != null)
@@ -99,6 +104,23 @@ public class DoorInteractionController : MonoBehaviour
             }
             
             onTeleport?.Invoke();
+            
+            // Limpiar el estado después de un breve retraso
+            StartCoroutine(ResetTeleportState());
+        }
+    }
+
+    private IEnumerator ResetTeleportState()
+    {
+        yield return new WaitForSeconds(0.5f); // Esperar un momento antes de resetear
+        isTeleporting = false;
+        isPlayerInRange = false;
+        currentPlayer = null;
+        playerInputs = null;
+        
+        if (interactionPrompt != null)
+        {
+            interactionPrompt.SetActive(false);
         }
     }
 

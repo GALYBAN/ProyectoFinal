@@ -15,13 +15,47 @@ public class PlayerStats : MonoBehaviour
 
     private void Awake()
     {
-        SaveSystem.LoadGame(this, gameObject);
+        Debug.Log($"PlayerStats Awake - Initial values: Health={currentHealthSlots}/{maxHealthSlots}, Mana={currentManaSlots}/{maxManaSlots}");
+        LoadGame();
     }
+
     private void Start()
     {
-        currentManaSlots = maxManaSlots;
-        currentHealthSlots = maxHealthSlots;
+        Debug.Log($"PlayerStats Start - Current values: Health={currentHealthSlots}/{maxHealthSlots}, Mana={currentManaSlots}/{maxManaSlots}");
+        if (currentManaSlots == 0)
+        {
+            currentManaSlots = maxManaSlots;
+            Debug.Log($"Setting default mana: {currentManaSlots}/{maxManaSlots}");
+        }
+        if (currentHealthSlots == 0)
+        {
+            currentHealthSlots = maxHealthSlots;
+            Debug.Log($"Setting default health: {currentHealthSlots}/{maxHealthSlots}");
+        }
         UpdateUI();
+    }
+
+    private void LoadGame()
+    {
+        SaveData data = SaveSystem.Instance.LoadGame();
+        if (data != null && data.playerName == gameObject.name)
+        {
+            Debug.Log($"Loading game data for {data.playerName} - Before load: Health={currentHealthSlots}/{maxHealthSlots}, Mana={currentManaSlots}/{maxManaSlots}");
+            
+            transform.position = data.playerPosition.ToVector3();
+            maxHealthSlots = data.maxHealthSlots;
+            currentHealthSlots = data.currentHealthSlots;
+            maxManaSlots = data.maxManaSlots;
+            currentManaSlots = data.currentManaSlots;
+            
+            Debug.Log($"After load: Health={currentHealthSlots}/{maxHealthSlots}, Mana={currentManaSlots}/{maxManaSlots}");
+            Debug.Log($"Game loaded for {data.playerName} at {data.checkpointName}");
+            UpdateUI();
+        }
+        else
+        {
+            Debug.Log($"No saved data found for {gameObject.name} or player name mismatch");
+        }
     }
 
     public bool ConsumeManaSlot()
@@ -67,8 +101,9 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
-    private void UpdateUI()
+    public void UpdateUI()
     {
+        Debug.Log($"Updating UI - Health={currentHealthSlots}/{maxHealthSlots}, Mana={currentManaSlots}/{maxManaSlots}");
         for (int i = 0; i < manaSlotsUI.Length; i++)
         {
             manaSlotsUI[i].enabled = i < currentManaSlots;

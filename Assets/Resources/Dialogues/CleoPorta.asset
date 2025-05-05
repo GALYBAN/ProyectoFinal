@@ -16,5 +16,5 @@ MonoBehaviour:
   - characterName: Cleo
     text: No em deixaran entrar... Millor continu cap endavant.
     voiceClip: {fileID: 8300000, guid: 3abd81f202d1b70408fd5c535f3601ad, type: 3}
-    displayTime: 3.5
-    textColor: {r: 1, g: 1, b: 1, a: 0}
+    displayTime: 3
+    textColor: {r: 1, g: 1, b: 1, a: 1}

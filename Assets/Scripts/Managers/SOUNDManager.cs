@@ -17,13 +17,17 @@ public class SOUNDManager : MonoBehaviour
 
     private void Awake()
     {
+        Debug.Log("SOUNDManager Awake called");
+        
         if (Instance == null)
         {
+            Debug.Log("Setting up SOUNDManager Instance");
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
         else
         {
+            Debug.LogWarning("Multiple SOUNDManager instances detected. Destroying duplicate.");
             Destroy(gameObject);
         }
     }
@@ -52,8 +56,21 @@ public class SOUNDManager : MonoBehaviour
     {
         if (voiceSource != null && clip != null)
         {
+            Debug.Log($"Playing voice clip: {clip.name}");
+            voiceSource.Stop(); // Detener cualquier audio actual
             voiceSource.clip = clip;
             voiceSource.Play();
+        }
+        else
+        {
+            if (voiceSource == null)
+            {
+                Debug.LogError("Voice source is not assigned in SOUNDManager!");
+            }
+            if (clip == null)
+            {
+                Debug.LogError("Audio clip is null!");
+            }
         }
     }
 
@@ -77,7 +94,15 @@ public class SOUNDManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        Debug.Log("SOUNDManager Start called");
+        if (voiceSource == null)
+        {
+            Debug.LogError("Voice source is not assigned in SOUNDManager!");
+        }
+        else
+        {
+            Debug.Log("Voice source is properly assigned");
+        }
     }
 
     // Update is called once per frame

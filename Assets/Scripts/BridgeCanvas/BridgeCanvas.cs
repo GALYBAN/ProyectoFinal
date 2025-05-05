@@ -22,7 +22,7 @@ public class BridgeCanvas : MonoBehaviour
 
     public void NovaPartida()
     {
-        SaveManager.DeleteSave();
+        SaveSystem.Instance.DeleteSave();
     }
 
 }

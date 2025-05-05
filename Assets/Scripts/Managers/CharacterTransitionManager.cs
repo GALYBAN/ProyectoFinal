@@ -36,14 +36,18 @@ public class CharacterTransitionManager : MonoBehaviour
             }
             originalRotation = virtualCamera.transform.rotation;
             
-            // Set initial camera target to Cleo
-            virtualCamera.Follow = cleoCharacter.transform;
-            virtualCamera.LookAt = cleoCharacter.transform;
+            // Set initial camera target based on which character is active
+            if (cleoCharacter.activeSelf)
+            {
+                virtualCamera.Follow = cleoCharacter.transform;
+                virtualCamera.LookAt = cleoCharacter.transform;
+            }
+            else if (poweredCharacter.activeSelf)
+            {
+                virtualCamera.Follow = poweredCharacter.transform;
+                virtualCamera.LookAt = poweredCharacter.transform;
+            }
         }
-        
-        // Start with Cleo active and powered character inactive
-        cleoCharacter.SetActive(true);
-        poweredCharacter.SetActive(false);
     }
 
     private void Update()
@@ -177,7 +181,7 @@ public class CharacterTransitionManager : MonoBehaviour
         poweredCharacter.transform.position = cleoCharacter.transform.position;
         poweredCharacter.transform.rotation = cleoCharacter.transform.rotation;
         
-        // Enable all components on the powered character
+        // Enable all components on powered character
         EnablePoweredCharacterComponents();
         
         // Set camera to follow powered character
@@ -191,5 +195,17 @@ public class CharacterTransitionManager : MonoBehaviour
             }
             virtualCamera.transform.rotation = originalRotation;
         }
+    }
+
+    private void EnableCleoComponents()
+    {
+        // Enable all components on Cleo
+        var cleoController = cleoCharacter.GetComponent<CleoController>();
+        var playerInputs = cleoCharacter.GetComponent<PlayerInputs>();
+        var animator = cleoCharacter.GetComponent<Animator>();
+        
+        if (cleoController != null) cleoController.enabled = true;
+        if (playerInputs != null) playerInputs.enabled = true;
+        if (animator != null) animator.enabled = true;
     }
 } 

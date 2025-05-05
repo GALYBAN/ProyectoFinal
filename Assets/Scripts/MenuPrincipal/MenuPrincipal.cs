@@ -116,7 +116,11 @@ public class MenuPrincipal : MonoBehaviour
 
     public void NovaPartida()
     {
-        ScenesManager.Instance.LoadScene(1);
+        // Eliminar la partida guardada
+        SaveSystem.Instance.DeleteSave();
+        
+        // Reproducir la cinemática introductoria
+        FindObjectOfType<IntroCinematic>().PlayCinematic();
     }
 }
 

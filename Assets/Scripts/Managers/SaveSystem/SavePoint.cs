@@ -8,18 +8,25 @@ public class SavePoint : MonoBehaviour
     [SerializeField] private GameObject saveMenu;
     [SerializeField] private CinemachineVirtualCamera virtualCamera;
     [SerializeField] private int newPriority = 15;
+    [SerializeField] private string playerName = "CleoTArmature";
+    private string cameraName;
 
     private PlayerInputs inputs;
     private bool playerInRange = false;
+    private GameObject currentPlayer;
 
     private void Awake()
     {
-        inputs = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerInputs>();
-
         // Generar un nombre único si no tiene uno asignado
         if (string.IsNullOrEmpty(checkpointName))
         {
             checkpointName = gameObject.name + "_" + transform.position.x + "_" + transform.position.y;
+        }
+
+        // Guardar el nombre de la cámara si no está asignado
+        if (virtualCamera != null && string.IsNullOrEmpty(cameraName))
+        {
+            cameraName = virtualCamera.gameObject.name;
         }
     }
 
@@ -31,15 +38,20 @@ public class SavePoint : MonoBehaviour
 
     private void Update()
     {
-        if (inputs.InteractInput && playerInRange)
+        if (currentPlayer != null)
         {
-            virtualCamera.Priority = newPriority;
-            OpenSaveMenu();
-        }
-        else if (inputs.PauseInput && playerInRange)
-        {
-            CloseSaveMenu();
-            virtualCamera.Priority = 5;
+            inputs = currentPlayer.GetComponent<PlayerInputs>();
+            
+            if (inputs != null && inputs.InteractInput && playerInRange)
+            {
+                virtualCamera.Priority = newPriority;
+                OpenSaveMenu();
+            }
+            else if (inputs != null && inputs.PauseInput && playerInRange)
+            {
+                CloseSaveMenu();
+                virtualCamera.Priority = 5;
+            }
         }
     }
 
@@ -48,6 +60,7 @@ public class SavePoint : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInRange = true;
+            currentPlayer = other.gameObject;
             saveButtonUI.SetActive(true);
         }
     }
@@ -57,6 +70,8 @@ public class SavePoint : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInRange = false;
+            currentPlayer = null;
+            inputs = null;
             saveButtonUI.SetActive(false);
             saveMenu.SetActive(false);
             virtualCamera.Priority = 5;
@@ -73,15 +88,16 @@ public class SavePoint : MonoBehaviour
 
     public void SaveGame()
     {
-        if (playerInRange)
+        if (playerInRange && currentPlayer != null)
         {
-            GameObject player = GameObject.FindGameObjectWithTag("Player");
-            PlayerStats stats = player.GetComponent<PlayerStats>();
-
-            if (player != null && stats != null)
+            PlayerStats stats = currentPlayer.GetComponent<PlayerStats>();
+            if (stats != null)
             {
-                SaveSystem.SaveGame(stats, player.transform.position, checkpointName);
-                Debug.Log($"Partida guardada en: {checkpointName}");
+                bool isVisible = currentPlayer.activeSelf;
+                int cameraPriority = virtualCamera.Priority;
+                bool isTransformed = currentPlayer.name == "CleoTArmature";
+                SaveSystem.Instance.SaveGame(stats, currentPlayer.transform.position, checkpointName, currentPlayer.name, isVisible, cameraPriority, cameraName, isTransformed);
+                Debug.Log($"Game saved at {checkpointName} for player {currentPlayer.name}, IsTransformed={isTransformed}");
             }
         }
         saveMenu.SetActive(false);
