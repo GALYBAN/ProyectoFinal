@@ -54,10 +54,17 @@ public class ScenesManager : MonoBehaviour
         SceneManager.LoadScene(sceneIndex);
     }
 
-    public void LoadSceneWithLoadingScreen(string sceneName)
+    public void LoadSceneWithLoadingScreen(string sceneName, bool playCinematic = false)
     {
-        PlayerPrefs.SetString("NextScene", sceneName); // Guardar la próxima escena a cargar
-        SceneManager.LoadScene("Cargando"); // Cargar la escena de carga
+        if (playCinematic)
+        {
+            CinematicManager.Instance.PlayCinematic(sceneName);
+        }
+        else
+        {
+            PlayerPrefs.SetString("NextScene", sceneName); // Guardar la próxima escena a cargar
+            SceneManager.LoadScene("Cargando"); // Cargar la escena de carga
+        }
     }
 
     public void QuitGame()

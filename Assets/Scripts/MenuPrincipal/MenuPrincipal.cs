@@ -17,7 +17,6 @@ public class MenuPrincipal : MonoBehaviour
         canvasMenu = GameObject.Find("CanvasMenu");
         canvasOpciones = GameObject.Find("CanvasOpciones");
         canvasGroup = GameObject.Find("CanvasOpciones").GetComponent<CanvasGroup>();
-
     }
 
     void Start()
@@ -28,6 +27,14 @@ public class MenuPrincipal : MonoBehaviour
         canvasMenu.SetActive(false);
         canvasGroup.alpha = 0f;
 
+        // Play main menu music
+        SOUNDManager.Instance.PlayMusic("MainMenu");
+    }
+
+    private void OnDestroy()
+    {
+        // Stop music when leaving the menu
+        SOUNDManager.Instance.StopMusic();
     }
 
     private void SetBoolInAllAnimators(string paramName, bool value)
@@ -119,8 +126,8 @@ public class MenuPrincipal : MonoBehaviour
         // Eliminar la partida guardada
         SaveSystem.Instance.DeleteSave();
         
-        // Reproducir la cinemática introductoria
-        FindObjectOfType<IntroCinematic>().PlayCinematic();
+        // Reproducir la cinemática introductoria y cargar el juego
+        ScenesManager.Instance.LoadSceneWithLoadingScreen("Juego", true);
     }
 }
 
