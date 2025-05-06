@@ -28,7 +28,7 @@ public class MenuPrincipal : MonoBehaviour
         canvasGroup.alpha = 0f;
 
         // Play main menu music
-        SOUNDManager.Instance.PlayMusic("MainMenu");
+        SOUNDManager.Instance.PlayMusic("MainMenuMusic");
     }
 
     private void OnDestroy()

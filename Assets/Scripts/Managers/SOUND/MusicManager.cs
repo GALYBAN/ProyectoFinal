@@ -4,7 +4,6 @@ using System.Collections;
 
 public class MusicManager : MonoBehaviour
 {
-    public static MusicManager Instance { get; private set; }
 
     [System.Serializable]
     public class MusicTrack
@@ -20,50 +19,46 @@ public class MusicManager : MonoBehaviour
     [SerializeField] private float fadeDuration = 1f;
     [SerializeField] private AudioMixerGroup musicMixerGroup;
 
-    private AudioSource musicSource;
+    [Header("Audio Source")]
+    public AudioSource musicSource;
+
     private Coroutine fadeCoroutine;
     private MusicTrack currentTrack;
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-            Initialize();
-        }
-        else if (Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
+        Initialize();
     }
 
     private void Initialize()
     {
-        // Create and set up the music source if it doesn't exist
         if (musicSource == null)
         {
-            musicSource = gameObject.AddComponent<AudioSource>();
-            musicSource.outputAudioMixerGroup = musicMixerGroup;
-            musicSource.playOnAwake = false;
-            musicSource.loop = true;
+            Debug.LogError("[MusicManager] No se ha asignado un AudioSource para la música. Asígnalo en el Inspector.");
+            return;
         }
 
-        // Ensure the music source is properly configured
-        if (musicSource != null)
-        {
-            musicSource.outputAudioMixerGroup = musicMixerGroup;
-            musicSource.playOnAwake = false;
-            musicSource.loop = true;
-        }
+        musicSource.outputAudioMixerGroup = musicMixerGroup;
+        musicSource.playOnAwake = false;
+        musicSource.loop = true;
     }
 
     public void PlayTrack(string trackName)
     {
+        Debug.Log("[MusicManager] PlayTrack llamado con: " + trackName);
+        if (musicTracks == null || musicTracks.Length == 0)
+        {
+            Debug.LogError("[MusicManager] musicTracks está vacío o null");
+            return;
+        }
+
+        foreach (var t in musicTracks)
+            Debug.Log("[MusicManager] Track en array: " + t.name + " (clip: " + (t.clip != null ? t.clip.name : "null") + ")");
+
         MusicTrack track = System.Array.Find(musicTracks, t => t.name == trackName);
         if (track != null)
         {
+            Debug.Log("[MusicManager] Track encontrado: " + track.name);
             if (currentTrack != track)
             {
                 currentTrack = track;
@@ -76,7 +71,7 @@ public class MusicManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"Track '{trackName}' not found in MusicManager!");
+            Debug.LogWarning("[MusicManager] Track '" + trackName + "' no encontrado en MusicManager!");
         }
     }
 
@@ -107,6 +102,12 @@ public class MusicManager : MonoBehaviour
 
     private IEnumerator FadeToNewTrack(MusicTrack track)
     {
+        Debug.Log("[MusicManager] Iniciando FadeToNewTrack para: " + track.name);
+        if (track.clip == null)
+        {
+            Debug.LogError("[MusicManager] El AudioClip de este track es null");
+            yield break;
+        }
         // Fade out current track if playing
         if (musicSource.isPlaying)
         {
