@@ -4,8 +4,8 @@ using UnityEngine.SceneManagement;
 public class ScenesManager : MonoBehaviour
 {
     private static ScenesManager instance;
-
     private Animator animator;
+    private bool shouldLoadSaveData = false;
 
     public static ScenesManager Instance
     {
@@ -46,7 +46,6 @@ public class ScenesManager : MonoBehaviour
     private void Start()
     {
         FindDeathCanvas();
-       
     }
 
     public void LoadScene(int sceneIndex)
@@ -56,14 +55,16 @@ public class ScenesManager : MonoBehaviour
 
     public void LoadSceneWithLoadingScreen(string sceneName, bool playCinematic = false)
     {
+        shouldLoadSaveData = !playCinematic && sceneName == "Juego";
+        
         if (playCinematic)
         {
             CinematicManager.Instance.PlayCinematic(sceneName);
         }
         else
         {
-            PlayerPrefs.SetString("NextScene", sceneName); // Guardar la próxima escena a cargar
-            SceneManager.LoadScene("Cargando"); // Cargar la escena de carga
+            PlayerPrefs.SetString("NextScene", sceneName);
+            SceneManager.LoadScene("Cargando");
         }
     }
 
@@ -83,6 +84,22 @@ public class ScenesManager : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         FindDeathCanvas();
+
+        // If we're loading the game scene and should load save data
+        if (scene.name == "Juego" && shouldLoadSaveData)
+        {
+            Debug.Log("Loading save data after scene load");
+            GameManager gameManager = FindObjectOfType<GameManager>();
+            if (gameManager != null)
+            {
+                gameManager.LoadPlayerData();
+            }
+            else
+            {
+                Debug.LogError("GameManager not found in scene!");
+            }
+            shouldLoadSaveData = false;
+        }
     }
 
     private void FindDeathCanvas()

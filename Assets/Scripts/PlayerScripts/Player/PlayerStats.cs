@@ -38,23 +38,42 @@ public class PlayerStats : MonoBehaviour
     private void LoadGame()
     {
         SaveData data = SaveSystem.Instance.LoadGame();
-        if (data != null && data.playerName == gameObject.name)
+        if (data != null)
         {
-            Debug.Log($"Loading game data for {data.playerName} - Before load: Health={currentHealthSlots}/{maxHealthSlots}, Mana={currentManaSlots}/{maxManaSlots}");
+            bool isPowered = gameObject.name.Contains("T"); // Check if this is the powered version
             
-            transform.position = data.playerPosition.ToVector3();
-            maxHealthSlots = data.maxHealthSlots;
-            currentHealthSlots = data.currentHealthSlots;
-            maxManaSlots = data.maxManaSlots;
-            currentManaSlots = data.currentManaSlots;
-            
-            Debug.Log($"After load: Health={currentHealthSlots}/{maxHealthSlots}, Mana={currentManaSlots}/{maxManaSlots}");
-            Debug.Log($"Game loaded for {data.playerName} at {data.checkpointName}");
+            // Get the correct position and stats based on character type
+            if (isPowered && data.poweredCharacterName == gameObject.name)
+            {
+                Debug.Log($"Loading powered character data - Before load: Health={currentHealthSlots}/{maxHealthSlots}, Mana={currentManaSlots}/{maxManaSlots}");
+                
+                transform.position = data.poweredPosition.ToVector3();
+                maxHealthSlots = data.poweredMaxHealth;
+                currentHealthSlots = data.poweredCurrentHealth;
+                maxManaSlots = data.poweredMaxMana;
+                currentManaSlots = data.poweredCurrentMana;
+                
+                Debug.Log($"After load: Health={currentHealthSlots}/{maxHealthSlots}, Mana={currentManaSlots}/{maxManaSlots}");
+                Debug.Log($"Game loaded for powered character at {data.checkpointName}");
+            }
+            else if (!isPowered && data.unpoweredCharacterName == gameObject.name)
+            {
+                Debug.Log($"Loading unpowered character data - Before load: Health={currentHealthSlots}/{maxHealthSlots}, Mana={currentManaSlots}/{maxManaSlots}");
+                
+                transform.position = data.unpoweredPosition.ToVector3();
+                maxHealthSlots = data.unpoweredMaxHealth;
+                currentHealthSlots = data.unpoweredCurrentHealth;
+                maxManaSlots = data.unpoweredMaxMana;
+                currentManaSlots = data.unpoweredCurrentMana;
+                
+                Debug.Log($"After load: Health={currentHealthSlots}/{maxHealthSlots}, Mana={currentManaSlots}/{maxManaSlots}");
+                Debug.Log($"Game loaded for unpowered character at {data.checkpointName}");
+            }
             UpdateUI();
         }
         else
         {
-            Debug.Log($"No saved data found for {gameObject.name} or player name mismatch");
+            Debug.Log($"No saved data found for {gameObject.name}");
         }
     }
 

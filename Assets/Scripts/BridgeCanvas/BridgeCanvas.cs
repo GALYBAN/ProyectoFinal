@@ -7,7 +7,14 @@ public class BridgeCanvas : MonoBehaviour
 
     public void Reprendre()
     {
-        ScenesManager.Instance.LoadSceneWithLoadingScreen("Juego");
+        if (SaveSystem.Instance.SaveExists())
+        {
+            ScenesManager.Instance.LoadSceneWithLoadingScreen("Juego", false);
+        }
+        else
+        {
+            Debug.LogWarning("No save file found to continue from!");
+        }
     }
 
     public void PantallaInicial()
@@ -23,6 +30,7 @@ public class BridgeCanvas : MonoBehaviour
     public void NovaPartida()
     {
         SaveSystem.Instance.DeleteSave();
+        ScenesManager.Instance.LoadSceneWithLoadingScreen("Juego", true);
     }
 
 }

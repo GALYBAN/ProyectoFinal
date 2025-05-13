@@ -1161,6 +1161,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2779179692454406635, guid: 316fd3234b7ef494382dc4f3b3d6abab,
         type: 3}
+      propertyPath: newPriority
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 2779179692454406635, guid: 316fd3234b7ef494382dc4f3b3d6abab,
+        type: 3}
       propertyPath: checkpointName
       value: Barranc de la Pineda
       objectReference: {fileID: 0}
@@ -1168,6 +1173,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SavePoint2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3339613974089467228, guid: 316fd3234b7ef494382dc4f3b3d6abab,
+        type: 3}
+      propertyPath: m_Priority
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6882233267056332743, guid: 316fd3234b7ef494382dc4f3b3d6abab,
         type: 3}
@@ -3169,7 +3179,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 4f2a5bf2acf5c724b92851c54b47f3e2,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -83.67
+      value: -86.13
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4f2a5bf2acf5c724b92851c54b47f3e2,
         type: 3}
@@ -18672,7 +18682,7 @@ Transform:
   m_GameObject: {fileID: 1704262950}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 81.97, y: 0.624094, z: -4.63}
+  m_LocalPosition: {x: 84.43, y: 0.624094, z: -4.63}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -31810,10 +31820,20 @@ PrefabInstance:
       propertyPath: playerName
       value: CleoArmature
       objectReference: {fileID: 0}
+    - target: {fileID: 2779179692454406635, guid: 316fd3234b7ef494382dc4f3b3d6abab,
+        type: 3}
+      propertyPath: newPriority
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 3286051257675668816, guid: 316fd3234b7ef494382dc4f3b3d6abab,
         type: 3}
       propertyPath: m_Name
       value: SavePoint1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3339613974089467228, guid: 316fd3234b7ef494382dc4f3b3d6abab,
+        type: 3}
+      propertyPath: m_Priority
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6882233267056332743, guid: 316fd3234b7ef494382dc4f3b3d6abab,
         type: 3}

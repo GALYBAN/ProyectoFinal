@@ -8,7 +8,6 @@ public class SavePoint : MonoBehaviour
     [SerializeField] private GameObject saveMenu;
     [SerializeField] private CinemachineVirtualCamera virtualCamera;
     [SerializeField] private int newPriority = 15;
-    [SerializeField] private string playerName = "CleoTArmature";
     private string cameraName;
 
     private PlayerInputs inputs;
@@ -90,15 +89,8 @@ public class SavePoint : MonoBehaviour
     {
         if (playerInRange && currentPlayer != null)
         {
-            PlayerStats stats = currentPlayer.GetComponent<PlayerStats>();
-            if (stats != null)
-            {
-                bool isVisible = currentPlayer.activeSelf;
-                int cameraPriority = virtualCamera.Priority;
-                bool isTransformed = currentPlayer.name == "CleoTArmature";
-                SaveSystem.Instance.SaveGame(stats, currentPlayer.transform.position, checkpointName, currentPlayer.name, isVisible, cameraPriority, cameraName, isTransformed);
-                Debug.Log($"Game saved at {checkpointName} for player {currentPlayer.name}, IsTransformed={isTransformed}");
-            }
+            SaveSystem.Instance.SaveGame(checkpointName);
+            Debug.Log($"Game saved at {checkpointName}");
         }
         saveMenu.SetActive(false);
     }

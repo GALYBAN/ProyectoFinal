@@ -32,7 +32,7 @@ public class Cagatió : MonoBehaviour
 
     void Update()
     {
-        Debug.Log($"Estado jefe: {estadoActual} | Enemigos vivos: {enemigosVivos} | Manos lanzadas: {manosLanzadas}");
+        //Debug.Log($"Estado jefe: {estadoActual} | Enemigos vivos: {enemigosVivos} | Manos lanzadas: {manosLanzadas}");
     }
 
     void OnDestroy()
