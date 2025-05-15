@@ -7,33 +7,41 @@ public class PlatformManager : MonoBehaviour
     [SerializeField] private LayerMask groundLayer; // Capa del suelo
     [SerializeField] private LayerMask collisionLayers; // Capas que bloquearán la creación
     [SerializeField] private Vector3 spawnOffset = new Vector3(-2, 0, 0); // Offset inicial de la plataforma
+    [SerializeField] private string poweredCharacterTag = "PoweredCharacter"; // Tag para identificar al personaje powered
+
+    [Header("Required Components")]
+    [SerializeField] private GlobalPlayerController playerController;
+    [SerializeField] private PlayerInputs playerInputs;
+    [SerializeField] private GroundSensor groundSensor;
 
     private GameObject[] platformPool; // Array de plataformas
     private GameObject currentPlatform; // Plataforma actualmente activa
     private bool isPlacingPlatform = false; // Indica si estás colocando la plataforma
-
-    private GlobalPlayerController playerController; // Referencia al controlador del jugador
-    private PlayerInputs playerInputs;
-    private GroundSensor groundSensor;
+    private GameObject poweredCharacter;
 
     void Awake()
     {
-        groundSensor = FindObjectOfType<GroundSensor>();
-        playerController = FindObjectOfType<GlobalPlayerController>();
-        playerInputs = FindObjectOfType<PlayerInputs>();
+        InitializePlatformPool();
+    }
 
-        // Crear el pool de plataformas con solo 2 plataformas
-        platformPool = new GameObject[2];
-        platformPool[0] = Instantiate(platformPrefab);
-        platformPool[1] = Instantiate(platformPrefab);
-
-        // Desactivar las plataformas al principio
-        platformPool[0].SetActive(false);
-        platformPool[1].SetActive(false);
+    void OnEnable()
+    {
+        // Actualizar referencias cuando el objeto se active
+        if (playerController == null) playerController = GetComponentInParent<GlobalPlayerController>();
+        if (playerInputs == null) playerInputs = GetComponentInParent<PlayerInputs>();
+        if (groundSensor == null) groundSensor = GetComponentInParent<GroundSensor>();
     }
 
     void Update()
     {
+        // Intentar encontrar al personaje powered si no tenemos las referencias
+        if (playerController == null || playerInputs == null || groundSensor == null)
+        {
+            FindPoweredCharacter();
+            // Si aún no encontramos al personaje, no continuamos con el update
+            if (playerController == null) return;
+        }
+
         // Si se presiona la tecla para crear una plataforma y no hay ninguna activa
         if (playerInputs.TogglePlatformInput)
         {
@@ -58,6 +66,31 @@ public class PlatformManager : MonoBehaviour
                 PlacePlatform();
             }
         }
+    }
+
+    private void FindPoweredCharacter()
+    {
+        // Buscar el personaje powered por tag
+        poweredCharacter = GameObject.FindGameObjectWithTag(poweredCharacterTag);
+        
+        if (poweredCharacter != null && poweredCharacter.activeInHierarchy)
+        {
+            playerController = poweredCharacter.GetComponent<GlobalPlayerController>();
+            playerInputs = poweredCharacter.GetComponent<PlayerInputs>();
+            groundSensor = poweredCharacter.GetComponent<GroundSensor>();
+        }
+    }
+
+    private void InitializePlatformPool()
+    {
+        // Crear el pool de plataformas con solo 2 plataformas
+        platformPool = new GameObject[2];
+        platformPool[0] = Instantiate(platformPrefab);
+        platformPool[1] = Instantiate(platformPrefab);
+
+        // Desactivar las plataformas al principio
+        platformPool[0].SetActive(false);
+        platformPool[1].SetActive(false);
     }
 
     bool CanCreatePlatform()
