@@ -58,6 +58,14 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        // Restaurar el estado del PlatformManager
+        PlatformManager platformManager = FindObjectOfType<PlatformManager>();
+        if (platformManager != null)
+        {
+            platformManager.gameObject.SetActive(data.isPlatformPowerActive);
+            Debug.Log($"PlatformManager state restored: {data.isPlatformPowerActive}");
+        }
+
         // Get character references from the manager
         GameObject cleoUnpowered = transitionManager.GetUnpoweredCharacter();
         GameObject cleoPowered = transitionManager.GetPoweredCharacter();

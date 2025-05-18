@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Horse : MonoBehaviour
+public class Saltador : MonoBehaviour
 {
-    public enum EnemyState { Patrolling, Chasing, Charging, Recovering, Idle }
+    public enum EnemyState { Patrolling, Chasing, Jumping, Recovering }
     private EnemyState currentState;
 
     [Header("Patrol Settings")]
@@ -16,7 +16,6 @@ public class Horse : MonoBehaviour
     public float patrolWaitTime = 1f;
     private float patrolWaitTimer;
     private float initialZ;
-    private bool hasPatrolPoints = false;
 
     [Header("Detection Settings")]
     public float detectionRange = 5f;
@@ -25,32 +24,38 @@ public class Horse : MonoBehaviour
     public LayerMask obstacleLayer;
     private bool canSeePlayer;
 
-    [Header("Combat Settings")]
-    public float chargeSpeed = 10f;
-    public float chargeDuration = 2f;
-    public float chargeDistance = 5f;
+    [Header("Jump Attack Settings")]
+    public float jumpForce = 10f;
+    public float jumpHeight = 5f;
+    public float jumpDuration = 1f;
     public float recoveryTime = 1f;
     private float recoveryTimer;
-    private bool isCharging = false;
-    private float chargeTimer = 0f;
-    private Vector3 chargeTarget;
+    private bool isJumping = false;
+    private float jumpTimer = 0f;
+    private Vector3 jumpTarget;
+    private Vector3 jumpStartPosition;
+    private float jumpProgress = 0f;
 
     [Header("References")]
     private Transform player;
     private NavMeshAgent agent;
     private Animator animator;
-    private float currentDirection = 1f; // 1 para derecha, -1 para izquierda
+    private Rigidbody rb;
 
     void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody>();
         
         // Guardar posición Z inicial
         initialZ = transform.position.z;
         
         // Verificar que los puntos de patrulla estén asignados
-        CheckPatrolPoints();
+        if (pointA == null || pointB == null)
+        {
+            Debug.LogError($"Los puntos de patrulla no están asignados para el saltador en {gameObject.name}! Por favor, asigna los puntos en el Inspector o usa SetPatrolPoints.");
+        }
     }
     
     void Start()
@@ -62,27 +67,10 @@ public class Horse : MonoBehaviour
             return;
         }
 
-        if (hasPatrolPoints)
-        {
-            currentState = EnemyState.Patrolling;
-            targetPoint = pointA;
-            agent.speed = patrolSpeed;
-            SetDestination2D(targetPoint.position);
-        }
-        else
-        {
-            currentState = EnemyState.Idle;
-            Debug.LogWarning($"El caballo en {gameObject.name} no tiene puntos de patrulla asignados. Permanecerá en estado Idle.");
-        }
-    }
-
-    void CheckPatrolPoints()
-    {
-        hasPatrolPoints = (pointA != null && pointB != null);
-        if (!hasPatrolPoints)
-        {
-            Debug.LogWarning($"Los puntos de patrulla no están asignados para el caballo en {gameObject.name}! Por favor, asigna los puntos en el Inspector o usa SetPatrolPoints.");
-        }
+        currentState = EnemyState.Patrolling;
+        targetPoint = pointA;
+        agent.speed = patrolSpeed;
+        SetDestination2D(targetPoint.position);
     }
 
     void Update()
@@ -94,25 +82,8 @@ public class Horse : MonoBehaviour
         currentPos.z = initialZ;
         transform.position = currentPos;
 
-        // Actualizar la dirección basada en el movimiento
-        if (agent.velocity.magnitude > 0.1f)
-        {
-            float direction = Mathf.Sign(agent.velocity.x);
-            if (direction != 0 && direction != currentDirection)
-            {
-                currentDirection = direction;
-                UpdateRotation();
-            }
-        }
-
         UpdateState();
         UpdateAnimation();
-    }
-
-    void UpdateRotation()
-    {
-        // Girar el modelo 180 grados si cambia la dirección
-        transform.rotation = Quaternion.Euler(0, currentDirection > 0 ? 0 : 180, 0);
     }
 
     void SetDestination2D(Vector3 target)
@@ -127,27 +98,16 @@ public class Horse : MonoBehaviour
         switch (currentState)
         {
             case EnemyState.Patrolling:
-                if (hasPatrolPoints)
-                {
-                    Patrol();
-                }
-                else
-                {
-                    currentState = EnemyState.Idle;
-                }
+                Patrol();
                 break;
             case EnemyState.Chasing:
                 ChasePlayer();
                 break;
-            case EnemyState.Charging:
-                Charge();
+            case EnemyState.Jumping:
+                JumpAttack();
                 break;
             case EnemyState.Recovering:
                 Recover();
-                break;
-            case EnemyState.Idle:
-                // En estado Idle, solo detectar al jugador
-                DetectPlayer();
                 break;
         }
     }
@@ -157,14 +117,12 @@ public class Horse : MonoBehaviour
         if (animator != null)
         {
             animator.SetFloat("Speed", Mathf.Abs(agent.velocity.x));
-            animator.SetBool("IsCharging", isCharging);
+            animator.SetBool("IsJumping", isJumping);
         }
     }
 
     void Patrol()
     {
-        if (!hasPatrolPoints) return;
-
         if (!agent.pathPending && agent.remainingDistance < 0.5f)
         {
             if (patrolWaitTimer <= 0)
@@ -221,46 +179,71 @@ public class Horse : MonoBehaviour
 
         if (distanceToPlayerX < 3f)
         {
-            StartCharge();
+            StartJumpAttack();
         }
     }
 
-    void StartCharge()
+    void StartJumpAttack()
     {
-        currentState = EnemyState.Charging;
-        isCharging = true;
-        chargeTimer = chargeDuration;
-        agent.speed = chargeSpeed;
+        currentState = EnemyState.Jumping;
+        isJumping = true;
+        jumpTimer = jumpDuration;
+        agent.enabled = false; // Desactivar el NavMeshAgent durante el salto
         
-        // Calcular dirección de carga solo en X
-        float directionX = Mathf.Sign(player.position.x - transform.position.x);
-        chargeTarget = new Vector3(
-            transform.position.x + directionX * chargeDistance,
+        // Guardar posición inicial del salto
+        jumpStartPosition = transform.position;
+        
+        // Calcular objetivo del salto (posición del jugador)
+        jumpTarget = new Vector3(
+            player.position.x,
             transform.position.y,
             initialZ
         );
-        SetDestination2D(chargeTarget);
+
+        // Aplicar fuerza de salto
+        if (rb != null)
+        {
+            rb.velocity = new Vector3(
+                (jumpTarget.x - transform.position.x) / jumpDuration,
+                jumpForce,
+                0
+            );
+        }
     }
 
-    void Charge()
+    void JumpAttack()
     {
-        if (isCharging)
+        if (isJumping)
         {
-            chargeTimer -= Time.deltaTime;
+            jumpTimer -= Time.deltaTime;
             
-            if (chargeTimer <= 0 || (!agent.pathPending && agent.remainingDistance < 0.5f))
+            if (jumpTimer <= 0 || IsGrounded())
             {
-                EndCharge();
+                EndJumpAttack();
             }
         }
     }
 
-    void EndCharge()
+    bool IsGrounded()
     {
-        isCharging = false;
+        return Physics.Raycast(transform.position, Vector3.down, 0.1f);
+    }
+
+    void EndJumpAttack()
+    {
+        isJumping = false;
         currentState = EnemyState.Recovering;
         recoveryTimer = recoveryTime;
+        
+        // Reactivar el NavMeshAgent
+        agent.enabled = true;
         agent.speed = patrolSpeed;
+        
+        // Detener el movimiento
+        if (rb != null)
+        {
+            rb.velocity = Vector3.zero;
+        }
     }
 
     void Recover()
@@ -271,6 +254,19 @@ public class Horse : MonoBehaviour
         {
             currentState = EnemyState.Patrolling;
             targetPoint = Mathf.Abs(transform.position.x - pointA.position.x) < Mathf.Abs(transform.position.x - pointB.position.x) ? pointB : pointA;
+            SetDestination2D(targetPoint.position);
+        }
+    }
+
+    // Método público para asignar puntos de patrulla desde el jefe
+    public void SetPatrolPoints(Transform newPointA, Transform newPointB)
+    {
+        pointA = newPointA;
+        pointB = newPointB;
+        
+        if (currentState == EnemyState.Patrolling)
+        {
+            targetPoint = pointA;
             SetDestination2D(targetPoint.position);
         }
     }
@@ -298,24 +294,4 @@ public class Horse : MonoBehaviour
             Gizmos.DrawRay(transform.position + Vector3.up * 1f, directionToPlayer * detectionRange);
         }
     }
-
-    // Método público para asignar puntos de patrulla desde el jefe
-    public void SetPatrolPoints(Transform newPointA, Transform newPointB)
-    {
-        pointA = newPointA;
-        pointB = newPointB;
-        CheckPatrolPoints();
-        
-        if (hasPatrolPoints && currentState == EnemyState.Patrolling)
-        {
-            targetPoint = pointA;
-            SetDestination2D(targetPoint.position);
-        }
-        else if (hasPatrolPoints && currentState == EnemyState.Idle)
-        {
-            currentState = EnemyState.Patrolling;
-            targetPoint = pointA;
-            SetDestination2D(targetPoint.position);
-        }
-    }
-}
+} 

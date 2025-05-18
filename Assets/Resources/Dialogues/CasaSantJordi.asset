@@ -24,7 +24,7 @@ MonoBehaviour:
     displayTime: 2
     textColor: {r: 0, g: 0, b: 0, a: 1}
   - characterName: Cleo
-    text: "Se que m'intentes dir algo, per\xF2 no entec que em dius."
+    text: "Se que m'intentes dir algo, per\xF2 no entenc que em dius."
     voiceClip: {fileID: 8300000, guid: 0dd1eea5672312544aeea7dc418cfe03, type: 3}
     displayTime: 4
     textColor: {r: 0, g: 0, b: 0, a: 1}

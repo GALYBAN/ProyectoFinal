@@ -116,14 +116,14 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1543179997396248836}
-  m_LocalRotation: {x: -0, y: -0.7067961, z: -0, w: 0.7074173}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0.23}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3630299192155460191}
   m_Father: {fileID: 7369385144279438409}
-  m_LocalEulerAnglesHint: {x: 0, y: -89.95, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0.04, y: 0.85}
@@ -229,7 +229,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2726015844785195595}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -238,7 +238,7 @@ Transform:
   - {fileID: 8337289374060535110}
   - {fileID: 2698528228134120191}
   m_Father: {fileID: 7079419629608523627}
-  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &2823946885372324421
 GameObject:
   m_ObjectHideFlags: 0
@@ -351,14 +351,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3933543126871613480}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0.029499888, y: -0.34000003, z: 0.2999997}
   m_LocalScale: {x: 0.35, y: 0.35, z: 0.35}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1018297501228209081}
   m_Father: {fileID: 7369385144279438409}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!195 &1057525464064866771
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -395,15 +395,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pointA: {fileID: 0}
   pointB: {fileID: 0}
+  patrolSpeed: 2
+  patrolWaitTime: 1
   detectionRange: 5
   visionAngle: 60
-  chargeSpeed: 10
-  patrolSpeed: 2
-  chargeDuration: 2
-  chargeDistance: 5
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  chargeSpeed: 10
+  chargeDuration: 2
+  chargeDistance: 5
+  recoveryTime: 1
 --- !u!136 &4968072613082557016
 CapsuleCollider:
   m_ObjectHideFlags: 0

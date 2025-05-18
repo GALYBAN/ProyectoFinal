@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class AnimBridgeEvents : MonoBehaviour
 {
-
     public Cagatió jefe;
     public Animator introAnimator;
 
@@ -13,34 +12,74 @@ public class AnimBridgeEvents : MonoBehaviour
     public AudioClip bossFightMusic;
     [SerializeField] private IntroCagatió cagatio;
     
+    void Start()
+    {
+        // Asegurarse de que tenemos la referencia al Cagatió
+        if (cagatio == null)
+        {
+            cagatio = FindObjectOfType<IntroCagatió>();
+        }
+        
+        if (introAnimator == null)
+        {
+            introAnimator = GetComponent<Animator>();
+        }
+    }
 
     public void CagatioLights()
     {
-        cagatio.ActivateCagatioLights();
+        if (cagatio != null)
+        {
+            cagatio.ActivateCagatioLights();
+        }
+        else
+        {
+            Debug.LogError("No se encontró la referencia a IntroCagatió");
+        }
     }
 
     public void SceneLights()
     {
-        cagatio.ActivateSceneLights();
+        if (cagatio != null)
+        {
+            cagatio.ActivateSceneLights();
+        }
     }
 
     public void Cristals()
     {
-        cagatio.ActivateCristals();
+        if (cagatio != null)
+        {
+            cagatio.ActivateCristals();
+        }
     }
     
     // Este método será llamado por un Animation Event
     public void FinalizarIntro()
     {
+        Debug.Log("Finalizando intro del jefe...");
         OnActivarJefe?.Invoke();
     }
 
     public void Intro()
     {
+        Debug.Log("Iniciando intro del jefe...");
         // Cambiar a música de jefe al activarlo
-        BSOManager.Instance?.PlayTrack(bossFightMusic);
-        
+        if (BSOManager.Instance != null)
+        {
+            BSOManager.Instance.PlayTrack(bossFightMusic);
+        }
+        else
+        {
+            Debug.LogWarning("BSOManager no encontrado");
+        }
     }
     
-
+    public void ActivateBossHealthBar()
+    {
+        if (cagatio != null)
+        {
+            cagatio.ActivateBossHealthBar();
+        }
+    }
 }

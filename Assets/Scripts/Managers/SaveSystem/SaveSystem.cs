@@ -12,6 +12,7 @@ public class SaveData
     public string checkpointName;
     public bool isTransformed;  // Indicates if we're in powered form
     public string activeCameraName;
+    public bool isPlatformPowerActive; // Nuevo campo para el estado del PlatformManager
 
     // Unpowered character data
     public string unpoweredCharacterName;
@@ -108,6 +109,19 @@ public class SaveSystem : MonoBehaviour
         SaveData saveData = new SaveData();
         saveData.checkpointName = checkpointName;
         saveData.isTransformed = transitionManager.IsTransformed();
+
+        // Buscar y guardar el estado del PlatformManager
+        PlatformManager platformManager = GameObject.FindObjectOfType<PlatformManager>();
+        if (platformManager != null)
+        {
+            saveData.isPlatformPowerActive = platformManager.gameObject.activeSelf;
+            Debug.Log($"PlatformManager found and state saved: {saveData.isPlatformPowerActive}");
+        }
+        else
+        {
+            Debug.LogWarning("PlatformManager not found in the scene. Setting isPlatformPowerActive to false.");
+            saveData.isPlatformPowerActive = false;
+        }
 
         Debug.Log($"Found characters - Unpowered: {cleoUnpowered.name} (Active: {cleoUnpowered.activeSelf}), " +
                   $"Powered: {cleoPowered.name} (Active: {cleoPowered.activeSelf})");

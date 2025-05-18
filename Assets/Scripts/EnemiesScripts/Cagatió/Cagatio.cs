@@ -10,9 +10,13 @@ public class Cagatió : MonoBehaviour
     public Transform puntoInvocacion2;
     public Transform[] puntosAparicionManos;
 
-    public float tiempoEntreAtaques = 2f;
-    public int maxManos = 5;
-    public float duracionCansancio = 5f;
+    [Header("Puntos de Patrulla para Caballos")]
+    public Transform[] puntosPatrullaCaballo1; // Puntos para el primer caballo
+    public Transform[] puntosPatrullaCaballo2; // Puntos para el segundo caballo
+
+    public float tiempoEntreAtaques = 4f;
+    public int maxManos = 1;
+    public float duracionCansancio = 8f;
 
     public GameObject jugador;
 
@@ -22,12 +26,24 @@ public class Cagatió : MonoBehaviour
     private Animator animator;
     private EstadoJefe estadoActual = EstadoJefe.Inactivo;
 
+    private GameObject manoActual; // Referencia a la mano actual
+
     private enum EstadoJefe { Inactivo, Invocando, Atacando, Cansado }
 
     void Start()
     {
         animator = GetComponent<Animator>();
         AnimBridgeEvents.OnActivarJefe += Activar;
+
+        // Verificar que tenemos los puntos de patrulla necesarios
+        if (puntosPatrullaCaballo1 == null || puntosPatrullaCaballo1.Length < 2)
+        {
+            Debug.LogError("No hay suficientes puntos de patrulla asignados para el caballo 1!");
+        }
+        if (puntosPatrullaCaballo2 == null || puntosPatrullaCaballo2.Length < 2)
+        {
+            Debug.LogError("No hay suficientes puntos de patrulla asignados para el caballo 2!");
+        }
     }
 
     void Update()
@@ -53,6 +69,15 @@ public class Cagatió : MonoBehaviour
     {
         Debug.Log("Invocando enemigos iniciales...");
         enemigosVivos = 0;
+        manosLanzadas = 0; // Resetear el contador de manos
+        
+        // Asegurarse de que no quede ninguna mano
+        if (manoActual != null)
+        {
+            Destroy(manoActual);
+            manoActual = null;
+        }
+        
         InvocarEnemigo(puntoInvocacion1);
         InvocarEnemigo(puntoInvocacion2);
         estadoActual = EstadoJefe.Invocando;
@@ -68,6 +93,26 @@ public class Cagatió : MonoBehaviour
 
         GameObject enemigo = Instantiate(enemigoPrefab, punto.position, punto.rotation);
         enemigo.transform.LookAt(jugador.transform);
+
+        // Asignar puntos de patrulla según el punto de invocación
+        Horse horseScript = enemigo.GetComponentInChildren<Horse>();
+        if (horseScript != null)
+        {
+            Transform[] puntosPatrulla = (punto == puntoInvocacion1) ? puntosPatrullaCaballo1 : puntosPatrullaCaballo2;
+            if (puntosPatrulla != null && puntosPatrulla.Length >= 2)
+            {
+                Debug.Log($"Asignando puntos de patrulla al caballo en {punto.name}");
+                horseScript.SetPatrolPoints(puntosPatrulla[0], puntosPatrulla[1]);
+            }
+            else
+            {
+                Debug.LogError($"No hay suficientes puntos de patrulla asignados para el caballo en {punto.name}");
+            }
+        }
+        else
+        {
+            Debug.LogError("No se encontró el componente Horse en el enemigo instanciado ni en sus hijos");
+        }
 
         EnemyStats stats = enemigo.GetComponentInChildren<EnemyStats>();
         if (stats != null)
@@ -116,9 +161,10 @@ public class Cagatió : MonoBehaviour
 
             if (mano != null)
             {
+                manoActual = mano; // Guardar referencia a la mano actual
                 ConfigurarMano(mano, puntoElegido);
                 manosLanzadas++;
-                Debug.Log($"Manos lanzadas: {manosLanzadas}/{maxManos}");
+                Debug.Log($"Mano lanzada: {manosLanzadas}/{maxManos}");
             }
         }
         catch (System.Exception e)
@@ -150,11 +196,19 @@ public class Cagatió : MonoBehaviour
             return null;
         }
 
-        GameObject mano = Instantiate(manoPrefab, punto.position, punto.rotation);
+        Vector3 spawnPosition = new Vector3(
+            punto.position.x,
+            punto.position.y + 15f,
+            punto.position.z
+        );
+        
+        GameObject mano = Instantiate(manoPrefab, spawnPosition, manoPrefab.transform.rotation);
+        
         Mano manoScript = mano.GetComponent<Mano>();
         if (manoScript != null)
         {
             manoScript.player = jugador;
+            manoScript.Activate();
         }
         else
         {
@@ -172,8 +226,6 @@ public class Cagatió : MonoBehaviour
             Debug.LogError("Componente Mano no encontrado");
             return;
         }
-
-        manoScript.Activate();
     }
 
     void CambiarACansado()
@@ -181,6 +233,14 @@ public class Cagatió : MonoBehaviour
         Debug.Log("Cambiando a estado Cansado");
         CancelInvoke(nameof(AtacarConMano));
         estadoActual = EstadoJefe.Cansado;
+        
+        // Destruir la mano actual si existe
+        if (manoActual != null)
+        {
+            Destroy(manoActual);
+            manoActual = null;
+        }
+        
         StartCoroutine(FaseCansancio());
     }
 

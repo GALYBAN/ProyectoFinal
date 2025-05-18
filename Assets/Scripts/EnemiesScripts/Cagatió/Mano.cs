@@ -4,22 +4,29 @@ using UnityEngine;
 public class Mano : MonoBehaviour
 {
     [Header("Movement Settings")]
-    public float horizontalSpeed = 8f;
-    public float fallSpeed = 15f;
-    public float startingHeight = 15f;
-    public float fallActivationDistance = 3f;
+    public float horizontalSpeed = 12f;
+    public float fallSpeed = 20f;
+    public float riseSpeed = 15f;
+    public float fallActivationDistance = 1f;
+    public float groundHeight = 0.5f;
+    public float timeBetweenAttacks = 2f;
+    public float minDistanceToPlayer = 0.5f;
 
     [Header("Collision Settings")]
     public LayerMask groundLayer;
     public LayerMask playerLayer;
-    public float destroyDelay = 0.1f;
     public GameObject impactEffect;
 
     public GameObject player;
     private bool isActive = false;
     private bool isFalling = false;
+    private bool isRising = false;
     private Rigidbody rb;
     private Collider col;
+    private Vector3 targetPosition;
+    private float lastAttackTime;
+    private Vector3 lastPlayerPosition;
+    private float initialHeight;
 
     void Awake()
     {
@@ -30,84 +37,127 @@ public class Mano : MonoBehaviour
 
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player");
-        if (player == null) Debug.LogError("Player not found!");
-
-        transform.position = new Vector3(
-            transform.position.x, 
-            startingHeight, 
-            transform.position.z
-        );
-    }
-
-    void Update()
-    {
-        if (!isActive) return;
-
-        if (!isFalling)
+        if (player == null)
         {
-            MoveHorizontally();
+            player = GameObject.Find("CleoArmature");
+            if (player == null)
+            {
+                Debug.LogError("Player not found!");
+                return;
+            }
         }
-        else
-        {
-            FallDown();
-        }
+
+        initialHeight = transform.position.y;
+        lastPlayerPosition = player.transform.position;
+        lastAttackTime = Time.time;
     }
 
     void ConfigurePhysics()
     {
-        rb.isKinematic = false;
-        rb.useGravity = false;
-        rb.constraints = RigidbodyConstraints.FreezeRotation;
-        col.isTrigger = false; // Importante para colisiones sólidas
+        if (rb != null)
+        {
+            rb.isKinematic = true;
+            rb.useGravity = false;
+            rb.constraints = RigidbodyConstraints.FreezeAll;
+        }
+        
+        if (col != null)
+        {
+            col.isTrigger = true;
+        }
+    }
+
+    void Update()
+    {
+        if (!isActive || player == null) return;
+
+        if (Vector3.Distance(lastPlayerPosition, player.transform.position) > minDistanceToPlayer)
+        {
+            lastPlayerPosition = player.transform.position;
+        }
+
+        if (!isFalling && !isRising)
+        {
+            MoveHorizontally();
+        }
+        else if (isFalling)
+        {
+            FallDown();
+        }
+        else if (isRising)
+        {
+            RiseUp();
+        }
     }
 
     void MoveHorizontally()
     {
-        if (player == null) return;
-
         Vector3 targetPos = new Vector3(
-            player.transform.position.x,
-            startingHeight,
-            player.transform.position.z
+            lastPlayerPosition.x,
+            initialHeight,
+            lastPlayerPosition.z
         );
 
-        transform.position = Vector3.MoveTowards(
-            transform.position,
-            targetPos,
-            horizontalSpeed * Time.deltaTime
-        );
+        Vector3 direction = (targetPos - transform.position).normalized;
+        float distance = Vector3.Distance(transform.position, targetPos);
 
-        // Check distance to start falling
+        transform.position += direction * horizontalSpeed * Time.deltaTime;
+
+        if (distance < 0.1f)
+        {
+            transform.position = targetPos;
+        }
+
         float horizontalDistance = Vector2.Distance(
             new Vector2(transform.position.x, transform.position.z),
-            new Vector2(player.transform.position.x, player.transform.position.z)
+            new Vector2(lastPlayerPosition.x, lastPlayerPosition.z)
         );
 
-        if (horizontalDistance < fallActivationDistance)
+        if (horizontalDistance < fallActivationDistance && Time.time - lastAttackTime >= timeBetweenAttacks)
         {
+            targetPosition = new Vector3(
+                transform.position.x,
+                groundHeight,
+                transform.position.z
+            );
             isFalling = true;
+            lastAttackTime = Time.time;
         }
     }
 
     void FallDown()
     {
-        rb.velocity = Vector3.down * fallSpeed;
+        Vector3 direction = (targetPosition - transform.position).normalized;
+        transform.position += direction * fallSpeed * Time.deltaTime;
+
+        if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
+        {
+            isFalling = false;
+            isRising = true;
+            targetPosition = new Vector3(
+                transform.position.x,
+                initialHeight,
+                transform.position.z
+            );
+        }
     }
 
-    void OnCollisionEnter(Collision collision)
+    void RiseUp()
     {
-        // Verificar por layer primero (más eficiente)
-        int collisionLayer = collision.gameObject.layer;
-        
-        if (groundLayer == (groundLayer | (1 << collisionLayer)))
+        Vector3 direction = (targetPosition - transform.position).normalized;
+        transform.position += direction * riseSpeed * Time.deltaTime;
+
+        if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
         {
-            DestroyHand();
+            isRising = false;
         }
-        else if (playerLayer == (playerLayer | (1 << collisionLayer)))
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (playerLayer == (playerLayer | (1 << other.gameObject.layer)))
         {
-            DealDamage(collision.gameObject);
-            DestroyHand();
+            DealDamage(other.gameObject);
         }
     }
 
@@ -119,16 +169,6 @@ public class Mano : MonoBehaviour
             stats.TakeDamage();
             Debug.Log("Player damaged by hand!");
         }
-    }
-
-    void DestroyHand()
-    {
-        if (impactEffect != null)
-        {
-            Instantiate(impactEffect, transform.position, Quaternion.identity);
-        }
-        
-        Destroy(gameObject, destroyDelay);
     }
 
     public void Activate()

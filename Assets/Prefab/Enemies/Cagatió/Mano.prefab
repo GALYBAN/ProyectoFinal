@@ -121,14 +121,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   horizontalSpeed: 8
   fallSpeed: 8
-  startingHeight: -20
-  fallActivationDistance: 3
+  riseSpeed: 10
+  fallActivationDistance: 1
+  groundHeight: -37
+  timeBetweenAttacks: 2
+  minDistanceToPlayer: 0.5
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
   playerLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 0
   destroyDelay: 0.1
   impactEffect: {fileID: 0}
   player: {fileID: 0}
