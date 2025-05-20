@@ -50,15 +50,10 @@ public class GameManager : MonoBehaviour
 
         Debug.Log($"Loading save data - IsTransformed: {data.isTransformed}");
         
-        // Find CharacterTransitionManager first
+        // Intentar encontrar el CharacterTransitionManager
         CharacterTransitionManager transitionManager = FindObjectOfType<CharacterTransitionManager>();
-        if (transitionManager == null)
-        {
-            Debug.LogError("CharacterTransitionManager not found in the scene");
-            return;
-        }
-
-        // Restaurar el estado del PlatformManager
+        
+        // Restaurar el estado del PlatformManager independientemente de si existe el TransitionManager
         PlatformManager platformManager = FindObjectOfType<PlatformManager>();
         if (platformManager != null)
         {
@@ -66,96 +61,95 @@ public class GameManager : MonoBehaviour
             Debug.Log($"PlatformManager state restored: {data.isPlatformPowerActive}");
         }
 
-        // Get character references from the manager
-        GameObject cleoUnpowered = transitionManager.GetUnpoweredCharacter();
-        GameObject cleoPowered = transitionManager.GetPoweredCharacter();
-
-        if (cleoUnpowered == null || cleoPowered == null)
+        // Si existe el TransitionManager, usarlo para cargar el estado del personaje
+        if (transitionManager != null)
         {
-            Debug.LogError("One or both characters not assigned in CharacterTransitionManager");
-            return;
-        }
-
-        Debug.Log($"Found both characters - Unpowered: {cleoUnpowered.name}, Powered: {cleoPowered.name}");
-        
-        // Set active states based on transformation state
-        cleoUnpowered.SetActive(!data.isTransformed);  // Active when NOT transformed
-        cleoPowered.SetActive(data.isTransformed);     // Active when transformed
-        
-        Debug.Log($"Set character states - Unpowered active: {!data.isTransformed}, Powered active: {data.isTransformed}");
-
-        // Always update positions for both characters
-        cleoUnpowered.transform.position = data.unpoweredPosition.ToVector3();
-        cleoPowered.transform.position = data.poweredPosition.ToVector3();
-        
-        Debug.Log($"Updated positions - Unpowered: {cleoUnpowered.transform.position}, Powered: {cleoPowered.transform.position}");
-
-        // Update stats for both characters
-        PlayerStats unpoweredStats = cleoUnpowered.GetComponent<PlayerStats>();
-        if (unpoweredStats != null)
-        {
-            unpoweredStats.maxHealthSlots = data.unpoweredMaxHealth;
-            unpoweredStats.currentHealthSlots = data.unpoweredCurrentHealth;
-            unpoweredStats.maxManaSlots = data.unpoweredMaxMana;
-            unpoweredStats.currentManaSlots = data.unpoweredCurrentMana;
-            if (!data.isTransformed) unpoweredStats.UpdateUI();
-            Debug.Log($"Updated unpowered character stats - Health: {unpoweredStats.currentHealthSlots}/{unpoweredStats.maxHealthSlots}, " +
-                     $"Mana: {unpoweredStats.currentManaSlots}/{unpoweredStats.maxManaSlots}");
-        }
-
-        PlayerStats poweredStats = cleoPowered.GetComponent<PlayerStats>();
-        if (poweredStats != null)
-        {
-            poweredStats.maxHealthSlots = data.poweredMaxHealth;
-            poweredStats.currentHealthSlots = data.poweredCurrentHealth;
-            poweredStats.maxManaSlots = data.poweredMaxMana;
-            poweredStats.currentManaSlots = data.poweredCurrentMana;
-            if (data.isTransformed) poweredStats.UpdateUI();
-            Debug.Log($"Updated powered character stats - Health: {poweredStats.currentHealthSlots}/{poweredStats.maxHealthSlots}, " +
-                     $"Mana: {poweredStats.currentManaSlots}/{poweredStats.maxManaSlots}");
-        }
-
-        // Configure camera to follow active character
-        GameObject activePlayer = data.isTransformed ? cleoPowered : cleoUnpowered;
-        CinemachineVirtualCamera[] cameras = FindObjectsOfType<CinemachineVirtualCamera>();
-
-        // Find and configure the saved camera
-        CinemachineVirtualCamera savedCamera = null;
-        foreach (var camera in cameras)
-        {
-            if (camera.gameObject.name == data.activeCameraName)
-            {
-                savedCamera = camera;
-                break;
-            }
-        }
-
-        if (savedCamera != null)
-        {
-            // Configure the saved camera
-            savedCamera.Follow = activePlayer.transform;
-            savedCamera.LookAt = activePlayer.transform;
-            Debug.Log($"Configured saved camera {savedCamera.gameObject.name} to follow {activePlayer.name}");
+            Debug.Log("Found CharacterTransitionManager, loading character state");
+            
+            // Usar el método LoadCharacterState del manager directamente
+            transitionManager.LoadCharacterState(data);
         }
         else
         {
-            // If we can't find the saved camera, use the main game camera
-            CinemachineVirtualCamera mainCamera = cameras.FirstOrDefault(c => c.gameObject.name == "CM vcam1");
-            if (mainCamera != null)
+            Debug.Log("CharacterTransitionManager not found - looking for initial character");
+            
+            // Buscar solo el personaje inicial (sin transformación) si no hay TransitionManager
+            GameObject initialCharacter = GameObject.FindGameObjectWithTag("Player");
+            if (initialCharacter != null)
             {
-                mainCamera.Follow = activePlayer.transform;
-                mainCamera.LookAt = activePlayer.transform;
-                Debug.Log($"Configured main camera to follow {activePlayer.name} as fallback");
+                Debug.Log($"Found initial character: {initialCharacter.name}");
+                
+                // Cargar posición del personaje
+                initialCharacter.transform.position = data.unpoweredPosition.ToVector3();
+                Debug.Log($"Updated initial character position to: {initialCharacter.transform.position}");
+                
+                // Cargar stats del personaje inicial si existen
+                PlayerStats stats = initialCharacter.GetComponent<PlayerStats>();
+                if (stats != null)
+                {
+                    stats.maxHealthSlots = data.unpoweredMaxHealth;
+                    stats.currentHealthSlots = data.unpoweredCurrentHealth;
+                    stats.maxManaSlots = data.unpoweredMaxMana;
+                    stats.currentManaSlots = data.unpoweredCurrentMana;
+                    stats.UpdateUI();
+                    Debug.Log($"Updated initial character stats - Health: {stats.currentHealthSlots}/{stats.maxHealthSlots}, Mana: {stats.currentManaSlots}/{stats.maxManaSlots}");
+                }
             }
             else
             {
-                Debug.LogError("Could not find any suitable camera to follow the player!");
+                Debug.LogWarning("No initial character found with Player tag");
             }
         }
 
-        // Update the CharacterTransitionManager with the loaded state
-        transitionManager.SetTransformed(data.isTransformed, 
-            data.isTransformed ? data.poweredPosition.ToVector3() : data.unpoweredPosition.ToVector3());
-        Debug.Log($"Updated CharacterTransitionManager state to: {data.isTransformed}");
+        // Configure camera to follow active character si existe el TransitionManager
+        if (transitionManager != null)
+        {
+            CinemachineVirtualCamera[] cameras = FindObjectsOfType<CinemachineVirtualCamera>();
+
+            // Find and configure the saved camera
+            CinemachineVirtualCamera savedCamera = null;
+            foreach (var camera in cameras)
+            {
+                if (camera.gameObject.name == data.activeCameraName)
+                {
+                    savedCamera = camera;
+                    break;
+                }
+            }
+
+            if (savedCamera != null)
+            {
+                // Obtener el personaje activo del TransitionManager
+                GameObject activePlayer = data.isTransformed ? 
+                    transitionManager.GetPoweredCharacter() : 
+                    transitionManager.GetUnpoweredCharacter();
+                
+                if (activePlayer != null)
+                {
+                    // Configure the saved camera
+                    savedCamera.Follow = activePlayer.transform;
+                    savedCamera.LookAt = activePlayer.transform;
+                    Debug.Log($"Configured saved camera {savedCamera.gameObject.name} to follow {activePlayer.name}");
+                }
+            }
+        }
+        else
+        {
+            // Si no hay TransitionManager, configurar la cámara para seguir al personaje inicial
+            GameObject initialCharacter = GameObject.FindGameObjectWithTag("Player");
+            if (initialCharacter != null)
+            {
+                CinemachineVirtualCamera[] cameras = FindObjectsOfType<CinemachineVirtualCamera>();
+                foreach (var camera in cameras)
+                {
+                    camera.Follow = initialCharacter.transform;
+                    camera.LookAt = initialCharacter.transform;
+                    Debug.Log($"Configured camera {camera.gameObject.name} to follow initial character");
+                }
+            }
+        }
+
+        // Finalizar la carga de datos
+        Debug.Log("Player data loaded successfully");
     }
 }

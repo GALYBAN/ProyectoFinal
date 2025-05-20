@@ -31,6 +31,7 @@ public class DialogueSystem : MonoBehaviour
     private bool isTyping = false;
     private Coroutine typingCoroutine;
     private Coroutine dialogueCoroutine;
+    
 
     private void Awake()
     {
@@ -73,6 +74,14 @@ public class DialogueSystem : MonoBehaviour
 
         dialoguePanel.SetActive(false);
         Debug.Log("DialogueSystem initialized successfully");
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && !isTyping)
+        {
+            SkipToNextLine();
+        }
     }
 
     public void StartDialogue(DialogueLine[] lines)
@@ -205,16 +214,62 @@ public class DialogueSystem : MonoBehaviour
     // Método para saltar al siguiente diálogo
     public void SkipToNextLine()
     {
+        Debug.Log("SkipToNextLine called");
+        
+        // Si está escribiendo, completar el texto actual de inmediato
         if (isTyping)
         {
-            StopCoroutine(typingCoroutine);
-            isTyping = false;
-            dialogueText.text = dialogueQueue.Peek().text;
+            Debug.Log("Skipping typing animation");
+            if (typingCoroutine != null)
+            {
+                StopCoroutine(typingCoroutine);
+                // Aseguramos que el texto se muestre completo
+                if (dialogueText != null)
+                {
+                    string currentDialogueText = dialogueText.text;
+                    // Actualizar solo si hay texto actual para mostrar
+                    if (!string.IsNullOrEmpty(currentDialogueText))
+                    {
+                        dialogueText.text = currentDialogueText; // Mantener el texto actual
+                    }
+                }
+                isTyping = false;
+            }
+            return; // Importante: Salir del método aquí para dar control al jugador
         }
-        else if (dialogueQueue.Count > 0)
+        // Si no está escribiendo pero hay una secuencia de diálogo en curso
+        else if (dialogueCoroutine != null)
         {
-            StopCoroutine(dialogueCoroutine);
-            dialogueCoroutine = StartCoroutine(PlayDialogueSequence());
+            Debug.Log("Skipping to next dialogue line");
+            try
+            {
+                StopCoroutine(dialogueCoroutine);
+                dialogueCoroutine = null; // Evitar referencias nulas
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("Error al detener la coroutina de diálogo: " + e.Message);
+            }
+            
+            // Solo avanzamos al siguiente diálogo si hay más en la cola
+            if (dialogueQueue.Count > 0)
+            {
+                dialogueCoroutine = StartCoroutine(PlayDialogueSequence());
+            }
+            else
+            {
+                // Si no hay más diálogos, terminamos
+                EndDialogue();
+            }
+        }
+        else
+        {
+            // Si no hay ninguna coroutina activa pero el panel sigue visible
+            if (dialoguePanel != null && dialoguePanel.activeSelf)
+            {
+                Debug.Log("No dialogue coroutine active but panel is visible, ending dialogue");
+                EndDialogue();
+            }
         }
     }
 } 
