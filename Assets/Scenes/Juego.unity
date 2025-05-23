@@ -4059,7 +4059,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 4f2a5bf2acf5c724b92851c54b47f3e2,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 4f2a5bf2acf5c724b92851c54b47f3e2,
         type: 3}
@@ -6737,6 +6737,12 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 723674921}
   m_CullTransparentMesh: 1
+--- !u!82 &725225190 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 1937038682013470751, guid: ba148ceeebd17fd41b08e85cb1165101,
+    type: 3}
+  m_PrefabInstance: {fileID: 5456656806632984502}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &741767737
 GameObject:
   m_ObjectHideFlags: 0
@@ -11600,6 +11606,32 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1318224310}
   m_CullTransparentMesh: 1
+--- !u!1 &1324813106 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2271781688280429392, guid: ba148ceeebd17fd41b08e85cb1165101,
+    type: 3}
+  m_PrefabInstance: {fileID: 5456656806632984502}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1324813107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1324813106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aba29c407f48c1e4ebe8b68037283951, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  musicTracks:
+  - name: BossFight
+    clip: {fileID: 8300000, guid: bb908f3099f5e6744b31e36cced635d1, type: 3}
+    volume: 1
+    loop: 0
+  fadeDuration: 1
+  musicMixerGroup: {fileID: 24300002, guid: 0b772ac3986473d4d87140bff8fbefb0, type: 2}
+  musicSource: {fileID: 725225190}
 --- !u!1 &1343393971
 GameObject:
   m_ObjectHideFlags: 0
@@ -61383,10 +61415,15 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4361163763190259260, guid: ba148ceeebd17fd41b08e85cb1165101, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2271781688280429392, guid: ba148ceeebd17fd41b08e85cb1165101,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1324813107}
   m_SourcePrefab: {fileID: 100100000, guid: ba148ceeebd17fd41b08e85cb1165101, type: 3}
 --- !u!23 &5456765726919661769
 MeshRenderer:

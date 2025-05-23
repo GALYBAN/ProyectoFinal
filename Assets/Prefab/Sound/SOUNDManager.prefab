@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1588765759708771930}
   - component: {fileID: 1937038682013470751}
+  - component: {fileID: 4361163763190259260}
   m_Layer: 0
   m_Name: MUSICManager
   m_TagString: Untagged
@@ -128,6 +129,30 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &4361163763190259260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 323565758145075577}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aba29c407f48c1e4ebe8b68037283951, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  musicTracks:
+  - name: BossFight
+    clip: {fileID: 8300000, guid: bb908f3099f5e6744b31e36cced635d1, type: 3}
+    volume: 1
+    loop: 0
+  - name: Menu
+    clip: {fileID: 8300000, guid: 10ab401752235a74885805f19fa46fb6, type: 3}
+    volume: 1
+    loop: 1
+  fadeDuration: 1
+  musicMixerGroup: {fileID: 24300002, guid: 0b772ac3986473d4d87140bff8fbefb0, type: 2}
+  musicSource: {fileID: 1937038682013470751}
 --- !u!1 &2271781688280429392
 GameObject:
   m_ObjectHideFlags: 0

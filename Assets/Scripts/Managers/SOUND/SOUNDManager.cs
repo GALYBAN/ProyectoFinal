@@ -25,15 +25,12 @@ public class SOUNDManager : MonoBehaviour
         {
             Debug.Log("Setting up SOUNDManager Instance");
             Instance = this;
-            DontDestroyOnLoad(gameObject);
-
             // Initialize MusicManager
             musicManager = GetComponent<MusicManager>();
-            // NO añadir por código, solo obtenerlo
-            // if (musicManager == null)
-            // {
-            //     musicManager = gameObject.AddComponent<MusicManager>();
-            // }
+            if (musicManager == null)
+            {
+                musicManager = gameObject.AddComponent<MusicManager>();
+            }
             // Ensure all audio sources are properly set up
             if (sfxSource == null)
             {
@@ -99,15 +96,13 @@ public class SOUNDManager : MonoBehaviour
 
     public void PlayMusic(string trackName)
     {
+        if (musicManager == null)
+        {
+            Debug.LogError("musicManager is null. Ensure it is assigned in the SOUNDManager.");
+            return;
+        }
         Debug.Log("[SOUNDManager] PlayMusic llamado con: " + trackName);
-        if (musicManager != null)
-        {
-            musicManager.PlayTrack(trackName);
-        }
-        else
-        {
-            Debug.LogError("[SOUNDManager] musicManager es null");
-        }
+        musicManager.PlayTrack(trackName);
     }
 
     public void StopMusic()

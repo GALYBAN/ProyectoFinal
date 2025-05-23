@@ -4,12 +4,10 @@ using UnityEngine;
 
 public class AnimBridgeEvents : MonoBehaviour
 {
-    public Cagatió jefe;
     public Animator introAnimator;
 
     public delegate void ActivarJefe();
     public static event ActivarJefe OnActivarJefe;
-    public AudioClip bossFightMusic;
     [SerializeField] private IntroCagatió cagatio;
     
     void Start()
@@ -61,17 +59,24 @@ public class AnimBridgeEvents : MonoBehaviour
         OnActivarJefe?.Invoke();
     }
 
-    public void Intro()
+    public void Intro(float waitTime)
     {
         Debug.Log("Iniciando intro del jefe...");
+        StartCoroutine(StartBossMusicAfterDelay(waitTime)); // Start the coroutine
+    }
+
+    private IEnumerator StartBossMusicAfterDelay(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime); // Wait for the specified time
+
         // Cambiar a música de jefe al activarlo
-        if (BSOManager.Instance != null)
+        if (SOUNDManager.Instance != null)
         {
-            BSOManager.Instance.PlayTrack(bossFightMusic);
+            SOUNDManager.Instance.PlayMusic("BossFight");
         }
         else
         {
-            Debug.LogWarning("BSOManager no encontrado");
+            Debug.LogWarning("SOUNDManager no encontrado");
         }
     }
     
