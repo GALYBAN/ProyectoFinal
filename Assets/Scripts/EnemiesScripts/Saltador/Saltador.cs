@@ -35,6 +35,7 @@ public class Saltador : MonoBehaviour
     private Vector3 jumpTarget;
     private Vector3 jumpStartPosition;
     private float jumpProgress = 0f;
+    [SerializeField] private Collider attackCollider; // Collider para el ataque
 
     [Header("References")]
     private Transform player;
@@ -55,6 +56,12 @@ public class Saltador : MonoBehaviour
         if (pointA == null || pointB == null)
         {
             Debug.LogError($"Los puntos de patrulla no están asignados para el saltador en {gameObject.name}! Por favor, asigna los puntos en el Inspector o usa SetPatrolPoints.");
+        }
+
+        // Desactivar el collider de ataque al inicio
+        if (attackCollider != null)
+        {
+            attackCollider.enabled = false;
         }
     }
     
@@ -190,6 +197,12 @@ public class Saltador : MonoBehaviour
         jumpTimer = jumpDuration;
         agent.enabled = false; // Desactivar el NavMeshAgent durante el salto
         
+        // Activar el collider de ataque
+        if (attackCollider != null)
+        {
+            attackCollider.enabled = true;
+        }
+        
         // Guardar posición inicial del salto
         jumpStartPosition = transform.position;
         
@@ -235,6 +248,12 @@ public class Saltador : MonoBehaviour
         currentState = EnemyState.Recovering;
         recoveryTimer = recoveryTime;
         
+        // Desactivar el collider de ataque
+        if (attackCollider != null)
+        {
+            attackCollider.enabled = false;
+        }
+        
         // Reactivar el NavMeshAgent
         agent.enabled = true;
         agent.speed = patrolSpeed;
@@ -278,8 +297,8 @@ public class Saltador : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, detectionRange);
 
         // Dibujar ángulo de visión
-        Vector3 leftBoundary = Quaternion.Euler(0, -visionAngle / 2, 0) * Vector3.right * detectionRange;
-        Vector3 rightBoundary = Quaternion.Euler(0, visionAngle / 2, 0) * Vector3.right * detectionRange;
+        Vector3 leftBoundary = Quaternion.Euler(0, -visionAngle / 2, 0) * transform.forward * detectionRange;
+        Vector3 rightBoundary = Quaternion.Euler(0, visionAngle / 2, 0) * transform.forward * detectionRange;
 
         Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position, transform.position + leftBoundary);

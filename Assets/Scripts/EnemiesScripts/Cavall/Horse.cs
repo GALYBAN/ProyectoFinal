@@ -34,6 +34,7 @@ public class Horse : MonoBehaviour
     private bool isCharging = false;
     private float chargeTimer = 0f;
     private Vector3 chargeTarget;
+    [SerializeField] private Collider attackCollider; // Collider para el ataque
 
     [Header("References")]
     private Transform player;
@@ -51,6 +52,12 @@ public class Horse : MonoBehaviour
         
         // Verificar que los puntos de patrulla estén asignados
         CheckPatrolPoints();
+
+        // Desactivar el collider de ataque al inicio
+        if (attackCollider != null)
+        {
+            attackCollider.enabled = false;
+        }
     }
     
     void Start()
@@ -232,6 +239,12 @@ public class Horse : MonoBehaviour
         chargeTimer = chargeDuration;
         agent.speed = chargeSpeed;
         
+        // Activar el collider de ataque
+        if (attackCollider != null)
+        {
+            attackCollider.enabled = true;
+        }
+        
         // Calcular dirección de carga solo en X
         float directionX = Mathf.Sign(player.position.x - transform.position.x);
         chargeTarget = new Vector3(
@@ -261,6 +274,12 @@ public class Horse : MonoBehaviour
         currentState = EnemyState.Recovering;
         recoveryTimer = recoveryTime;
         agent.speed = patrolSpeed;
+
+        // Desactivar el collider de ataque
+        if (attackCollider != null)
+        {
+            attackCollider.enabled = false;
+        }
     }
 
     void Recover()
@@ -282,8 +301,8 @@ public class Horse : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, detectionRange);
 
         // Dibujar ángulo de visión
-        Vector3 leftBoundary = Quaternion.Euler(0, -visionAngle / 2, 0) * Vector3.right * detectionRange;
-        Vector3 rightBoundary = Quaternion.Euler(0, visionAngle / 2, 0) * Vector3.right * detectionRange;
+        Vector3 leftBoundary = Quaternion.Euler(0, -visionAngle / 2, 0) * transform.forward * detectionRange;
+        Vector3 rightBoundary = Quaternion.Euler(0, visionAngle / 2, 0) * transform.forward * detectionRange;
 
         Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position, transform.position + leftBoundary);
