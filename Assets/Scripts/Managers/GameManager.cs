@@ -8,7 +8,10 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     private bool isPaused = false;
-
+    
+    // Referencia al menú de pausa
+    public GameObject pauseMenu; // Asegúrate de asignar esto en el Inspector
+    private PlayerInputs playerInput;
     private void Awake()
     {
         if (Instance == null)
@@ -20,12 +23,41 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
     }
 
     private void Start()
     {
         // Cargar la partida guardada al inicio
         LoadPlayerData();
+        
+        if (GameObject.Find("CleoArmature") != null)
+        {
+            playerInput = GameObject.Find("CleoArmature").GetComponent<PlayerInputs>();
+        }
+        else
+        {
+            playerInput = GameObject.Find("CleoTArmature").GetComponent<PlayerInputs>();
+        }
+        
+    }
+
+    private void Update()
+    {
+        // Detectar si se presiona la tecla ESC
+        if (playerInput.PauseInput)
+        {
+            Debug.Log("Pausa: Tecla ESC presionada");
+            TogglePause();
+            if (isPaused)
+            {
+                ShowPauseMenu(); // Mostrar el menú de pausa
+            }
+            else
+            {
+                HidePauseMenu(); // Ocultar el menú de pausa
+            }
+        }
     }
 
     public void TogglePause()
@@ -151,5 +183,23 @@ public class GameManager : MonoBehaviour
 
         // Finalizar la carga de datos
         Debug.Log("Player data loaded successfully");
+    }
+
+    public void ShowPauseMenu()
+    {
+        if (pauseMenu != null)
+        {
+            pauseMenu.SetActive(true); // Activar el menú de pausa
+            Debug.Log("Pausa: Menú de pausa mostrado");
+        }
+    }
+
+    public void HidePauseMenu()
+    {
+        if (pauseMenu != null)
+        {
+            pauseMenu.SetActive(false); // Desactivar el menú de pausa
+            Debug.Log("Pausa: Menú de pausa ocultado");
+        }
     }
 }

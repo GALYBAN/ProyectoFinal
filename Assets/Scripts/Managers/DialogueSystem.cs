@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 [System.Serializable]
 public class DialogueLine
@@ -32,6 +33,8 @@ public class DialogueSystem : MonoBehaviour
     private Coroutine typingCoroutine;
     private Coroutine dialogueCoroutine;
     
+    // Evento que se dispara al finalizar un diálogo
+    public event Action OnDialogueEnd;
 
     private void Awake()
     {
@@ -41,13 +44,14 @@ public class DialogueSystem : MonoBehaviour
         {
             Debug.Log("Setting up DialogueSystem Instance");
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
         else if (Instance != this)
         {
             Debug.LogWarning("Multiple DialogueSystem instances detected. Destroying duplicate.");
             Destroy(gameObject);
         }
+        dialoguePanel = GameObject.Find("DialoguePanel");
+
     }
 
     private void Start()
@@ -72,6 +76,7 @@ public class DialogueSystem : MonoBehaviour
             return;
         }
 
+        // Asignar el panel de diálogo
         dialoguePanel.SetActive(false);
         Debug.Log("DialogueSystem initialized successfully");
     }
@@ -209,6 +214,9 @@ public class DialogueSystem : MonoBehaviour
     {
         Debug.Log("Ending dialogue");
         dialoguePanel.SetActive(false);
+
+        // Invocar el evento
+        OnDialogueEnd?.Invoke();
     }
 
     // Método para saltar al siguiente diálogo

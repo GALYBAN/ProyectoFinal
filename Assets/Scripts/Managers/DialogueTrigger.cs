@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 [System.Serializable]
 public class DialogueZone
@@ -20,26 +21,14 @@ public class DialogueTrigger : MonoBehaviour
 
     private void Start()
     {
-        
         // Verificar que todas las zonas tienen los componentes necesarios
         foreach (var zone in dialogueZones)
         {
-            if (zone.triggerZone == null)
-            {
-                continue;
-            }
-            
-            if (zone.dialogueData == null)
-            {
-                continue;
-            }
+            if (zone.triggerZone == null || zone.dialogueData == null) continue;
 
             // Verificar que la zona tiene un collider
             Collider zoneCollider = zone.triggerZone.GetComponent<Collider>();
-            if (zoneCollider == null)
-            {
-            }
-            else
+            if (zoneCollider != null)
             {
                 zoneCollider.isTrigger = true;
             }
@@ -47,7 +36,7 @@ public class DialogueTrigger : MonoBehaviour
     }
 
     private void OnTriggerEnter(Collider other)
-    {        
+    {
         // Verificar si el objeto o alguno de sus padres tiene el tag "Player"
         Transform current = other.transform;
         while (current != null)
@@ -62,7 +51,6 @@ public class DialogueTrigger : MonoBehaviour
             }
             current = current.parent;
         }
-
     }
 
     private void OnTriggerStay(Collider other)
@@ -87,21 +75,22 @@ public class DialogueTrigger : MonoBehaviour
     {
         foreach (DialogueZone zone in dialogueZones)
         {
-            if (zone.triggerZone == null || zone.dialogueData == null)
-            {
-                continue;
-            }
+            if (zone.triggerZone == null || zone.dialogueData == null) continue;
 
             float distance = Vector3.Distance(playerTransform.position, zone.triggerZone.position);
 
-            // Modificamos la condición para que funcione correctamente con canBeTriggeredMultipleTimes
             if (distance <= zone.triggerRadius && (!isDialogueActive || zone.canBeTriggeredMultipleTimes))
             {
                 if (DialogueSystem.Instance != null)
                 {
                     isDialogueActive = true;
                     DialogueSystem.Instance.StartDialogue(zone.dialogueData.dialogueLines);
-                    // Solo marcamos como triggered si no permite múltiples activaciones
+                    
+                    // Suscribirse al evento de finalización del diálogo
+                    DialogueSystem.Instance.OnDialogueEnd += () => {
+                        isDialogueActive = false; // Restablecer el estado al finalizar el diálogo
+                    };
+
                     if (!zone.canBeTriggeredMultipleTimes)
                     {
                         zone.hasBeenTriggered = true;
@@ -109,11 +98,9 @@ public class DialogueTrigger : MonoBehaviour
                 }
                 else
                 {
+                    Debug.LogError("DialogueSystem not found!");
                 }
                 break;
-            }
-            else
-            {
             }
         }
     }
