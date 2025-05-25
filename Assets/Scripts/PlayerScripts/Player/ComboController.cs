@@ -33,7 +33,7 @@ public class ComboController : MonoBehaviour
         playerStats = GetComponent<PlayerStats>();
         anim = GetComponent<Animator>();
         groundSensor = GetComponent<GroundSensor>();
-        inputs = GetComponent<PlayerInputs>();
+        inputs = GetComponentInParent<PlayerInputs>();
     }
 
     void Update()

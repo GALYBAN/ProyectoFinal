@@ -20,7 +20,7 @@ public class PlayerGravity : MonoBehaviour
     void Start()
     {
         anim = GetComponent<Animator>();
-        inputs = GetComponent<PlayerInputs>();
+        inputs = GetComponentInParent<PlayerInputs>();
         groundSensor = GetComponent<GroundSensor>();
     }
 

@@ -173,7 +173,7 @@ public class CharacterTransitionManager : MonoBehaviour
     {
         // Enable all components on the powered character
         var globalController = poweredCharacter.GetComponent<GlobalPlayerController>();
-        var playerInputs = poweredCharacter.GetComponent<PlayerInputs>();
+        var playerInputs = poweredCharacter.GetComponentInParent<PlayerInputs>();
         var animator = poweredCharacter.GetComponent<Animator>();
         var movementController = poweredCharacter.GetComponent<MovementController>();
         var gravityController = poweredCharacter.GetComponent<PlayerGravity>();
@@ -195,7 +195,7 @@ public class CharacterTransitionManager : MonoBehaviour
     {
         // Enable all components on Cleo
         var cleoController = cleoCharacter.GetComponent<CleoController>();
-        var playerInputs = cleoCharacter.GetComponent<PlayerInputs>();
+        var playerInputs = cleoCharacter.GetComponentInParent<PlayerInputs>();
         var animator = cleoCharacter.GetComponent<Animator>();
         
         if (cleoController != null) cleoController.enabled = true;

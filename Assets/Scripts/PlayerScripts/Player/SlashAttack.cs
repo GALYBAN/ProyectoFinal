@@ -22,7 +22,7 @@ public class SlashAttack : MonoBehaviour
         groundSensor = GetComponent<GroundSensor>();    
         move = GetComponent<MovementController>();
         anim = GetComponent<Animator>();
-        inputs = GetComponent<PlayerInputs>(); 
+        inputs = GetComponentInParent<PlayerInputs>(); 
     }
 
     void Update()

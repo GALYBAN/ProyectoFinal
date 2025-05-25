@@ -79,7 +79,7 @@ public class ActivatePlatform : MonoBehaviour
         if (other.CompareTag(playerTag))
         {
             playerInRange = true;
-            playerInputs = other.GetComponent<PlayerInputs>();
+            playerInputs = GameObject.Find("PlayerReference").GetComponent<PlayerInputs>();
             
             // Mostrar el prompt de interacción si existe
             if (interactionPrompt != null)

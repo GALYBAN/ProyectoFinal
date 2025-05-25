@@ -39,8 +39,8 @@ public class SavePoint : MonoBehaviour
     {
         if (currentPlayer != null)
         {
-            inputs = currentPlayer.GetComponent<PlayerInputs>();
-            
+            inputs = GameObject.Find("PlayerReference").GetComponent<PlayerInputs>();
+
             if (inputs != null && inputs.InteractInput && playerInRange)
             {
                 virtualCamera.Priority = newPriority;

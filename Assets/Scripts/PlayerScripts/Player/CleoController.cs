@@ -17,7 +17,7 @@ public class CleoController : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
-        playerInputs = GetComponent<PlayerInputs>();
+        playerInputs = GetComponentInParent<PlayerInputs>();
     }
 
     void Update()

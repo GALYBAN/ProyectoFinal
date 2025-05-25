@@ -20,7 +20,7 @@ public class GlobalPlayerController : MonoBehaviour
         comboController = GetComponent<ComboController>();
         anim = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
-        inputs = GetComponent<PlayerInputs>();
+        inputs = GetComponentInParent<PlayerInputs>();
         movementController = GetComponent<MovementController>();
         gravityController = GetComponent<PlayerGravity>();
     }

@@ -35,6 +35,7 @@ public class DoorInteractionController : MonoBehaviour
         {
             Debug.LogError("Teleport Point not assigned!");
         }
+        playerInputs = GameObject.Find("PlayerReference").GetComponent<PlayerInputs>();
     }
 
     private void Update()
@@ -51,7 +52,6 @@ public class DoorInteractionController : MonoBehaviour
         {
             isPlayerInRange = true;
             currentPlayer = other.gameObject;
-            playerInputs = currentPlayer.GetComponent<PlayerInputs>();
             
             if (interactionPrompt != null)
             {

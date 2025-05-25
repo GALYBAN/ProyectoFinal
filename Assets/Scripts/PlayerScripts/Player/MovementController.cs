@@ -25,7 +25,7 @@ public class MovementController : MonoBehaviour
         comboController = GetComponent<ComboController>();
         anim = GetComponent<Animator>();
         controller = GetComponent<CharacterController>();
-        inputs = GetComponent<PlayerInputs>();
+        inputs = GetComponentInParent<PlayerInputs>();
         groundSensor = GetComponent<GroundSensor>();
     }
 

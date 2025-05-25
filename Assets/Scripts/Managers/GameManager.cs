@@ -12,12 +12,15 @@ public class GameManager : MonoBehaviour
     // Referencia al menú de pausa
     public GameObject pauseMenu; // Asegúrate de asignar esto en el Inspector
     private PlayerInputs playerInput;
+    
+    
     private void Awake()
     {
+        LoadPlayerData();
+
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -25,21 +28,9 @@ public class GameManager : MonoBehaviour
         }
 
     }
-
     private void Start()
     {
-        // Cargar la partida guardada al inicio
-        LoadPlayerData();
-        
-        if (GameObject.Find("CleoArmature") != null)
-        {
-            playerInput = GameObject.Find("CleoArmature").GetComponent<PlayerInputs>();
-        }
-        else
-        {
-            playerInput = GameObject.Find("CleoTArmature").GetComponent<PlayerInputs>();
-        }
-        
+        playerInput = GameObject.Find("PlayerReference").GetComponent<PlayerInputs>();
     }
 
     private void Update()
@@ -81,10 +72,31 @@ public class GameManager : MonoBehaviour
         }
 
         Debug.Log($"Loading save data - IsTransformed: {data.isTransformed}");
-        
+
         // Intentar encontrar el CharacterTransitionManager
         CharacterTransitionManager transitionManager = FindObjectOfType<CharacterTransitionManager>();
-        
+        if (transitionManager == null)
+        {
+            Debug.LogError("CharacterTransitionManager not found!");
+            return;
+        }
+
+        // Cargar el personaje no transformado
+        GameObject unpoweredCharacter = transitionManager.GetUnpoweredCharacter();
+        if (unpoweredCharacter != null)
+        {
+            unpoweredCharacter.transform.position = data.unpoweredPosition.ToVector3();
+            Debug.Log($"Unpowered character loaded at position: {unpoweredCharacter.transform.position}");
+        }
+
+        // Cargar el personaje transformado
+        GameObject poweredCharacter = transitionManager.GetPoweredCharacter();
+        if (poweredCharacter != null)
+        {
+            poweredCharacter.transform.position = data.poweredPosition.ToVector3();
+            Debug.Log($"Powered character loaded at position: {poweredCharacter.transform.position}");
+        }
+
         // Restaurar el estado del PlatformManager independientemente de si existe el TransitionManager
         PlatformManager platformManager = FindObjectOfType<PlatformManager>();
         if (platformManager != null)

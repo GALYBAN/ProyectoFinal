@@ -28,7 +28,7 @@ public class PlatformManager : MonoBehaviour
     {
         // Actualizar referencias cuando el objeto se active
         if (playerController == null) playerController = GetComponentInParent<GlobalPlayerController>();
-        if (playerInputs == null) playerInputs = GetComponentInParent<PlayerInputs>();
+        if (playerInputs == null) playerInputs = GameObject.Find("PlayerReference").GetComponent<PlayerInputs>();
         if (groundSensor == null) groundSensor = GetComponentInParent<GroundSensor>();
     }
 
