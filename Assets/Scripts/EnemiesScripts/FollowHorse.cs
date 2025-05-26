@@ -8,7 +8,7 @@ public class FollowHorse : MonoBehaviour
     {
         if (horse != null)
         {
-            transform.position = horse.position + Vector3.up * 2f; // Ajusta la altura si es necesario
+            transform.position = horse.position + Vector3.up * 1.1f; // Ajusta la altura si es necesario
         }
     }
 }

@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AnimBridgeEvents : MonoBehaviour
 {
     public Animator introAnimator;
-
+    public GameObject creditsCanvas;
+    public Animator creditsAnimator;
     public delegate void ActivarJefe();
     public static event ActivarJefe OnActivarJefe;
     [SerializeField] private IntroCagatió cagatio;
@@ -86,5 +88,29 @@ public class AnimBridgeEvents : MonoBehaviour
         {
             cagatio.ActivateBossHealthBar();
         }
+    }
+
+    public void ActivateCredits()
+    {
+        creditsCanvas.SetActive(true);
+        creditsAnimator.SetTrigger("Creditos");
+        SOUNDManager.Instance.StopMusic();
+        SOUNDManager.Instance.PlayMusic("Credits");
+    }
+
+    public void CreditsEnd()
+    {
+        creditsCanvas.SetActive(false);
+        SOUNDManager.Instance.StopMusic();
+        ScenesManager.Instance.LoadSceneWithLoadingScreen("MenuPrincipal");
+    }
+
+    public IEnumerator Credits()
+    {
+        ActivateCredits();
+
+        yield return new WaitForSeconds(25f);
+        
+        CreditsEnd();
     }
 }

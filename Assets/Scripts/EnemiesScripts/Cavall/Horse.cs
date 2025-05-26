@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -41,6 +42,8 @@ public class Horse : MonoBehaviour
     private NavMeshAgent agent;
     private Animator animator;
     private float currentDirection = 1f; // 1 para derecha, -1 para izquierda
+
+    private bool canTakeDamage = true; // Nuevo estado para controlar el daño
 
     void Awake()
     {
@@ -240,10 +243,7 @@ public class Horse : MonoBehaviour
         agent.speed = chargeSpeed;
         
         // Activar el collider de ataque
-        if (attackCollider != null)
-        {
-            attackCollider.enabled = true;
-        }
+        StartCoroutine(ChargeHitboxCoroutine());
         
         // Calcular dirección de carga solo en X
         float directionX = Mathf.Sign(player.position.x - transform.position.x);
@@ -253,6 +253,16 @@ public class Horse : MonoBehaviour
             initialZ
         );
         SetDestination2D(chargeTarget);
+    }
+
+    private IEnumerator ChargeHitboxCoroutine()
+    {
+        if (attackCollider != null)
+        {
+            attackCollider.enabled = true;
+        }
+        yield return new WaitForSeconds(0.2f);
+        attackCollider.enabled = false;
     }
 
     void Charge()
@@ -274,12 +284,6 @@ public class Horse : MonoBehaviour
         currentState = EnemyState.Recovering;
         recoveryTimer = recoveryTime;
         agent.speed = patrolSpeed;
-
-        // Desactivar el collider de ataque
-        if (attackCollider != null)
-        {
-            attackCollider.enabled = false;
-        }
     }
 
     void Recover()
@@ -336,5 +340,15 @@ public class Horse : MonoBehaviour
             targetPoint = pointA;
             SetDestination2D(targetPoint.position);
         }
+    }
+
+    public bool CanDealDamage()
+    {
+        return canTakeDamage;
+    }
+
+    public void DisableDamage()
+    {
+        canTakeDamage = false;
     }
 }

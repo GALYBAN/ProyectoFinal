@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -42,6 +43,8 @@ public class Saltador : MonoBehaviour
     private NavMeshAgent agent;
     private Animator animator;
     private Rigidbody rb;
+
+    private bool canTakeDamage = true; // Nuevo estado para controlar el daño
 
     void Awake()
     {
@@ -197,12 +200,6 @@ public class Saltador : MonoBehaviour
         jumpTimer = jumpDuration;
         agent.enabled = false; // Desactivar el NavMeshAgent durante el salto
         
-        // Activar el collider de ataque
-        if (attackCollider != null)
-        {
-            attackCollider.enabled = true;
-        }
-        
         // Guardar posición inicial del salto
         jumpStartPosition = transform.position;
         
@@ -223,15 +220,26 @@ public class Saltador : MonoBehaviour
             );
         }
     }
+    private IEnumerator JumpHitboxCoroutine()
+    {
+        if (attackCollider != null)
+        {
+            attackCollider.enabled = true;
+        }
+        yield return new WaitForSeconds(0.1f);
+        attackCollider.enabled = false;
+    }
 
     void JumpAttack()
     {
         if (isJumping)
         {
+
             jumpTimer -= Time.deltaTime;
             
             if (jumpTimer <= 0 || IsGrounded())
             {
+                StartCoroutine(JumpHitboxCoroutine());
                 EndJumpAttack();
             }
         }
@@ -247,12 +255,6 @@ public class Saltador : MonoBehaviour
         isJumping = false;
         currentState = EnemyState.Recovering;
         recoveryTimer = recoveryTime;
-        
-        // Desactivar el collider de ataque
-        if (attackCollider != null)
-        {
-            attackCollider.enabled = false;
-        }
         
         // Reactivar el NavMeshAgent
         agent.enabled = true;
@@ -313,4 +315,15 @@ public class Saltador : MonoBehaviour
             Gizmos.DrawRay(transform.position + Vector3.up * 1f, directionToPlayer * detectionRange);
         }
     }
+
+    public bool CanDealDamage()
+    {
+        return canTakeDamage;
+    }
+
+    public void DisableDamage()
+    {
+        canTakeDamage = false;
+    }
+
 } 

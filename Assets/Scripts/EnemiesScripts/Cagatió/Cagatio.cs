@@ -262,4 +262,5 @@ public class Cagatió : MonoBehaviour
     {
         return estadoActual == EstadoJefe.Cansado;
     }
+    
 }
