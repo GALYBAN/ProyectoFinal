@@ -252,8 +252,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.41116348, y: 0.18143654, z: 1.3381944}
-  m_Center: {x: -0.0009917767, y: -0.015389444, z: -0.0044565205}
+  m_Size: {x: 0.4111652, y: 0.67414725, z: 1.3381944}
+  m_Center: {x: -0.0009917767, y: 0.022297593, z: -0.0044565205}
 --- !u!114 &5334937578644524957
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -472,12 +472,12 @@ MonoBehaviour:
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 8
-  jumpForce: 6
-  jumpHeight: 5
-  jumpDuration: 1
+  jumpForce: 8
+  jumpHeight: 6
+  jumpDuration: 1.5
   recoveryTime: 1
   attackCollider: {fileID: 8087571782708805460}
-  player:
+  players:
   - {fileID: 0}
   - {fileID: 0}
 --- !u!54 &3340081198304883838

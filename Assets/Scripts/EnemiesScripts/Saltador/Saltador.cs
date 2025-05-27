@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using System.Linq;
 
 public class Saltador : MonoBehaviour
 {
@@ -39,7 +40,8 @@ public class Saltador : MonoBehaviour
     [SerializeField] private Collider attackCollider; // Collider para el ataque
 
     [Header("References")]
-    [SerializeField] private Transform[] player;
+    [SerializeField] private Transform[] players; // Cambiado a un array de Transforms
+    private Transform closestPlayer; // Variable para almacenar el jugador más cercano
     private NavMeshAgent agent;
     private Animator animator;
     private Rigidbody rb;
@@ -66,31 +68,17 @@ public class Saltador : MonoBehaviour
         {
             attackCollider.enabled = false;
         }
-        
-        
     }
     
     void Start()
     {
-        // Acceder al CharacterTransitionManager
-        CharacterTransitionManager characterManager = FindObjectOfType<CharacterTransitionManager>();
-        if (characterManager != null)
-        {
-            player = new Transform[2];
-            player[0] = characterManager.GetUnpoweredCharacter().transform; // Asignar el personaje no transformado
-            player[1] = characterManager.GetPoweredCharacter().transform; // Asignar el personaje transformado
-        }
-        else
-        {
-            Debug.LogError("No se encontró el CharacterTransitionManager en la escena!");
-            return;
-        }
-
-        if (player == null || player.Length == 0)
+         
+        players = GameObject.FindGameObjectsWithTag("Player").Select(p => p.transform).ToArray(); // Asignar todos los jugadores
+        if (players == null || players.Length == 0)
         {
             Debug.LogError("No se encontraron jugadores en la escena!");
             return;
-        }        
+        }
 
         currentState = EnemyState.Patrolling;
         targetPoint = pointA;
@@ -100,7 +88,7 @@ public class Saltador : MonoBehaviour
 
     void Update()
     {
-        if (player == null) return;
+        if (players == null || players.Length == 0) return;
 
         // Mantener solo la posición Z fija
         Vector3 currentPos = transform.position;
@@ -148,6 +136,8 @@ public class Saltador : MonoBehaviour
 
     void Patrol()
     {
+        players = GameObject.FindGameObjectsWithTag("Player").Select(p => p.transform).ToArray(); // Asignar todos los jugadores
+
         if (!agent.pathPending && agent.remainingDistance < 0.5f)
         {
             if (patrolWaitTimer <= 0)
@@ -166,11 +156,11 @@ public class Saltador : MonoBehaviour
 
     void DetectPlayer()
     {
-        // Calcular distancia solo en el eje X para ambos jugadores
+        
+        closestPlayer = null;
         float closestDistance = float.MaxValue;
-        Transform closestPlayer = null;
 
-        foreach (var p in player)
+        foreach (var p in players)
         {
             float distanceToPlayerX = Mathf.Abs(p.position.x - transform.position.x);
             if (distanceToPlayerX < closestDistance)
@@ -200,33 +190,22 @@ public class Saltador : MonoBehaviour
             }
         }
     }
+
     void ChasePlayer()
     {
-        Transform closestPlayer = null;
-        float closestDistance = float.MaxValue;
-
-        foreach (var p in player)
-        {
-            float distanceToPlayerX = Mathf.Abs(p.position.x - transform.position.x);
-            if (distanceToPlayerX < closestDistance)
-            {
-                closestDistance = distanceToPlayerX;
-                closestPlayer = p;
-            }
-        }
-
         if (closestPlayer != null)
         {
             SetDestination2D(closestPlayer.position);
             
             // Si el jugador se aleja demasiado en X, volver a patrullar
-            if (closestDistance > detectionRange * 1.5f)
+            float distanceToPlayerX = Mathf.Abs(closestPlayer.position.x - transform.position.x);
+            if (distanceToPlayerX > detectionRange * 1.5f)
             {
                 currentState = EnemyState.Patrolling;
                 return;
             }
 
-            if (closestDistance < 3f)
+            if (distanceToPlayerX < 3f)
             {
                 StartJumpAttack();
             }
@@ -244,19 +223,6 @@ public class Saltador : MonoBehaviour
         jumpStartPosition = transform.position;
 
         // Calcular objetivo del salto (posición del jugador más cercano)
-        Transform closestPlayer = null;
-        float closestDistance = float.MaxValue;
-
-        foreach (var p in player)
-        {
-            float distanceToPlayerX = Mathf.Abs(p.position.x - transform.position.x);
-            if (distanceToPlayerX < closestDistance)
-            {
-                closestDistance = distanceToPlayerX;
-                closestPlayer = p;
-            }
-        }
-
         if (closestPlayer != null)
         {
             jumpTarget = new Vector3(
@@ -268,21 +234,24 @@ public class Saltador : MonoBehaviour
             // Aplicar fuerza de salto
             if (rb != null)
             {
+                // Usar la lógica anterior para calcular la velocidad
                 rb.velocity = new Vector3(
                     (jumpTarget.x - transform.position.x) / jumpDuration,
                     jumpForce,
                     0
                 );
+                Debug.Log($"Jumping to target: {jumpTarget}, with velocity applied.");
             }
         }
     }
+
     private IEnumerator JumpHitboxCoroutine()
     {
         if (attackCollider != null)
         {
             attackCollider.enabled = true;
         }
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(4f);
         attackCollider.enabled = false;
     }
 
@@ -291,10 +260,11 @@ public class Saltador : MonoBehaviour
         if (isJumping)
         {
             jumpTimer -= Time.deltaTime;
-            
+
+            StartCoroutine(JumpHitboxCoroutine());
+
             if (jumpTimer <= 0 || IsGrounded())
             {
-                StartCoroutine(JumpHitboxCoroutine());
                 EndJumpAttack();
             }
         }
@@ -302,7 +272,7 @@ public class Saltador : MonoBehaviour
 
     bool IsGrounded()
     {
-        return Physics.Raycast(transform.position, Vector3.down, 0.4f);
+        return Physics.Raycast(transform.position, Vector3.down, 0.1f);
     }
 
     void EndJumpAttack()
@@ -332,8 +302,6 @@ public class Saltador : MonoBehaviour
             targetPoint = Mathf.Abs(transform.position.x - pointA.position.x) < Mathf.Abs(transform.position.x - pointB.position.x) ? pointB : pointA;
             SetDestination2D(targetPoint.position);
         }
-
-        CanDealDamage();
     }
 
     // Método público para asignar puntos de patrulla desde el jefe
@@ -364,28 +332,12 @@ public class Saltador : MonoBehaviour
         Gizmos.DrawLine(transform.position, transform.position + rightBoundary);
 
         // Dibujar línea al jugador más cercano si está en rango
-        if (player != null && player.Length > 0)
+        if (closestPlayer != null)
         {
-            Transform closestPlayer = null;
-            float closestDistance = float.MaxValue;
-
-            foreach (var p in player)
-            {
-                float distanceToPlayerX = Mathf.Abs(p.position.x - transform.position.x);
-                if (distanceToPlayerX < closestDistance)
-                {
-                    closestDistance = distanceToPlayerX;
-                    closestPlayer = p;
-                }
-            }
-
-            if (closestPlayer != null)
-            {
-                float directionX = Mathf.Sign(closestPlayer.position.x - transform.position.x);
-                Vector3 directionToPlayer = new Vector3(directionX, 0, 0);
-                Gizmos.color = canSeePlayer ? Color.green : Color.red;
-                Gizmos.DrawRay(transform.position + Vector3.up * 1f, directionToPlayer * detectionRange);
-            }
+            float directionX = Mathf.Sign(closestPlayer.position.x - transform.position.x);
+            Vector3 directionToPlayer = new Vector3(directionX, 0, 0);
+            Gizmos.color = canSeePlayer ? Color.green : Color.red;
+            Gizmos.DrawRay(transform.position + Vector3.up * 1f, directionToPlayer * detectionRange);
         }
     }
 
@@ -398,5 +350,4 @@ public class Saltador : MonoBehaviour
     {
         canTakeDamage = false;
     }
-
 } 

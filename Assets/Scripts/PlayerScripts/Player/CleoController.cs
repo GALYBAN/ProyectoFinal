@@ -13,11 +13,22 @@ public class CleoController : MonoBehaviour
     private Animator animator;
     private PlayerInputs playerInputs;
 
+    [Header("Audio Settings")]
+    [SerializeField] private AudioSource audioSource; // Referencia al AudioSource
+    [SerializeField] private AudioClip walkSound; // Clip de sonido de caminar
+    private bool isWalking = false; // Para controlar el estado de caminar
+
     private void Start()
     {
         controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
         playerInputs = GetComponentInParent<PlayerInputs>();
+
+        // Asegúrate de que el AudioSource esté asignado
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
     }
 
     void Update()
@@ -30,30 +41,32 @@ public class CleoController : MonoBehaviour
 
         // Use PlayerInputs instead of direct Input
         float move = playerInputs.HorizontalInput;
-        // Invert X axis movement
+        // Invertir el movimiento en el eje X
         Vector3 move3D = new Vector3(move, 0, 0);
         controller.Move(move3D * Time.deltaTime * playerSpeed);
 
-        // Rotate character based on movement direction
+        // Rotar el personaje según la dirección del movimiento
         if (move != 0)
         {
-            // Calculate target rotation (180 degrees if moving left, 0 if moving right)
+            // Calcular la rotación objetivo (180 grados si se mueve a la izquierda, 0 si se mueve a la derecha)
             float targetRotation = move > 0 ? 180f : 0f;
-            // Instant rotation
+            // Rotación instantánea
             transform.rotation = Quaternion.Euler(0, targetRotation, 0);
         }
 
-        // Animation states
+        // Estados de animación
         if (move != 0)
         {
             animator.SetBool("IsWalking", true);
+            PlayWalkSound(); // Reproducir sonido de caminar
         }
         else
         {
             animator.SetBool("IsWalking", false);
+            StopWalkSound(); // Detener sonido de caminar
         }
 
-        // Changes the height position of the player
+        // Cambiar la altura del jugador
         if (playerInputs.JumpPressed && groundedPlayer)
         {
             playerVelocity.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
@@ -62,5 +75,22 @@ public class CleoController : MonoBehaviour
 
         playerVelocity.y += gravityValue * Time.deltaTime;
         controller.Move(playerVelocity * Time.deltaTime);
+    }
+
+    private void PlayWalkSound()
+    {
+        if (!audioSource.isPlaying && walkSound != null)
+        {
+            audioSource.clip = walkSound;
+            audioSource.Play();
+        }
+    }
+
+    private void StopWalkSound()
+    {
+        if (audioSource.isPlaying)
+        {
+            audioSource.Stop();
+        }
     }
 }

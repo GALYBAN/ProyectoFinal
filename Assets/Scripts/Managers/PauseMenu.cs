@@ -12,7 +12,6 @@ public class PauseMenu : MonoBehaviour
     public Slider sfxVolumeSlider;
     public Slider voiceVolumeSlider;*/
     public Button resumeButton;
-    public Button optionsButton;
     public Button mainMenuButton;
     public Button quitButton;
 
@@ -49,7 +48,6 @@ public class PauseMenu : MonoBehaviour
     private void InitializeButtons()
     {
         resumeButton.onClick.AddListener(OnResumeButtonClicked);
-        optionsButton.onClick.AddListener(OnOptionsButtonClicked);
         mainMenuButton.onClick.AddListener(OnMainMenuButtonClicked);
         quitButton.onClick.AddListener(OnQuitButtonClicked);
     }
@@ -80,17 +78,6 @@ public class PauseMenu : MonoBehaviour
         // Llama a TogglePause y oculta el menú de pausa
         GameManager.Instance.TogglePause();
         GameManager.Instance.HidePauseMenu();
-    }
-
-    private void OnOptionsButtonClicked()
-    {
-        // Aquí puedes activar el GameObject del menú de opciones
-        // Por ejemplo, si tienes un GameObject llamado optionsMenu
-        GameObject optionsMenu = GameObject.Find("OptionsMenu");
-        if (optionsMenu != null)
-        {
-            optionsMenu.SetActive(true);
-        }
     }
 
     private void OnMainMenuButtonClicked()
