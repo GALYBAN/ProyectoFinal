@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7089732786709839462}
   - component: {fileID: 853566918722658423}
+  - component: {fileID: 6468446325361119032}
   m_Layer: 9
   m_Name: Hit
   m_TagString: Untagged
@@ -53,6 +54,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.1330705, y: 5.859375, z: 2.2564535}
   m_Center: {x: 0.0761308, y: 2.9681723, z: 1.9642353}
+--- !u!114 &6468446325361119032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3734920309441508328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8b6c9b5071152a48a1904f461f146f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5210796992834680579
 GameObject:
   m_ObjectHideFlags: 0
@@ -161,7 +174,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5307355398637743298}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 120.8, y: -15.15, z: -2.03}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -184,7 +197,6 @@ GameObject:
   - component: {fileID: 2129367707711794068}
   - component: {fileID: 9103091221788543221}
   - component: {fileID: 2131096963186946184}
-  - component: {fileID: 8884921382911742480}
   m_Layer: 9
   m_Name: Cavall
   m_TagString: Enemy
@@ -230,7 +242,7 @@ NavMeshAgent:
   m_Height: 5.87
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_ObstacleAvoidanceType: 0
 --- !u!114 &7920896329987436165
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -260,6 +272,9 @@ MonoBehaviour:
   chargeDistance: 5
   recoveryTime: 1
   attackCollider: {fileID: 853566918722658423}
+  player:
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!136 &2129367707711794068
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -306,7 +321,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
@@ -326,18 +341,6 @@ MonoBehaviour:
   jefe: {fileID: 0}
   animator: {fileID: 0}
   slider: {fileID: 2727000735043944153}
---- !u!114 &8884921382911742480
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5438640178072596177}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c8b6c9b5071152a48a1904f461f146f4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &6318947915959310614
 GameObject:
   m_ObjectHideFlags: 0
@@ -593,14 +596,14 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7723215794791400835}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0.23}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7597055814022613077}
   m_Father: {fileID: 5401354395979914466}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0.04, y: 0.85}

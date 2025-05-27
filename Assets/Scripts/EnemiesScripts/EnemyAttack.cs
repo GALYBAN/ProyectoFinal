@@ -20,7 +20,6 @@ public class EnemyAttack : MonoBehaviour
             if (playerStats != null)
             {
                 playerStats.TakeDamage();
-                saltador.DisableDamage();
                 Debug.Log("Player damaged by Espantaocells attack!");
             }
         }
@@ -31,7 +30,6 @@ public class EnemyAttack : MonoBehaviour
             if (playerStats != null)
             {
                 playerStats.TakeDamage();
-                horse.DisableDamage();
                 Debug.Log("Player damaged by Cavall attack!");
             }
         }

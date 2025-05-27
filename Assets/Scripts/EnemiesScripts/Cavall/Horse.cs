@@ -38,7 +38,7 @@ public class Horse : MonoBehaviour
     [SerializeField] private Collider attackCollider; // Collider para el ataque
 
     [Header("References")]
-    private Transform player;
+    [SerializeField] private Transform[] player;
     private NavMeshAgent agent;
     private Animator animator;
     private float currentDirection = 1f; // 1 para derecha, -1 para izquierda
@@ -61,14 +61,29 @@ public class Horse : MonoBehaviour
         {
             attackCollider.enabled = false;
         }
+
+        
     }
     
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player")?.transform;
-        if (player == null)
+        // Acceder al CharacterTransitionManager
+        CharacterTransitionManager characterManager = FindObjectOfType<CharacterTransitionManager>();
+        if (characterManager != null)
         {
-            Debug.LogError("No se encontró el jugador!");
+            player = new Transform[2];
+            player[0] = characterManager.GetUnpoweredCharacter().transform; // Asignar el personaje no transformado
+            player[1] = characterManager.GetPoweredCharacter().transform; // Asignar el personaje transformado
+        }
+        else
+        {
+            Debug.LogError("No se encontró el CharacterTransitionManager en la escena!");
+            return;
+        }
+
+        if (player == null || player.Length == 0)
+        {
+            Debug.LogError("No se encontraron jugadores en la escena!");
             return;
         }
 
@@ -193,12 +208,23 @@ public class Horse : MonoBehaviour
 
     void DetectPlayer()
     {
-        // Calcular distancia solo en el eje X
-        float distanceToPlayerX = Mathf.Abs(player.position.x - transform.position.x);
-        
-        if (distanceToPlayerX < detectionRange)
+        // Calcular distancia solo en el eje X para ambos jugadores
+        float closestDistance = float.MaxValue;
+        Transform closestPlayer = null;
+
+        foreach (var p in player)
         {
-            float directionX = Mathf.Sign(player.position.x - transform.position.x);
+            float distanceToPlayerX = Mathf.Abs(p.position.x - transform.position.x);
+            if (distanceToPlayerX < closestDistance)
+            {
+                closestDistance = distanceToPlayerX;
+                closestPlayer = p;
+            }
+        }
+
+        if (closestPlayer != null && closestDistance < detectionRange)
+        {
+            float directionX = Mathf.Sign(closestPlayer.position.x - transform.position.x);
             float angle = Vector3.Angle(transform.forward, new Vector3(directionX, 0, 0));
 
             if (angle < visionAngle / 2f)
@@ -219,19 +245,33 @@ public class Horse : MonoBehaviour
 
     void ChasePlayer()
     {
-        SetDestination2D(player.position);
-        
-        // Si el jugador se aleja demasiado en X, volver a patrullar
-        float distanceToPlayerX = Mathf.Abs(player.position.x - transform.position.x);
-        if (distanceToPlayerX > detectionRange * 1.5f)
+        Transform closestPlayer = null;
+        float closestDistance = float.MaxValue;
+
+        foreach (var p in player)
         {
-            currentState = EnemyState.Patrolling;
-            return;
+            float distanceToPlayerX = Mathf.Abs(p.position.x - transform.position.x);
+            if (distanceToPlayerX < closestDistance)
+            {
+                closestDistance = distanceToPlayerX;
+                closestPlayer = p;
+            }
         }
 
-        if (distanceToPlayerX < 3f)
+        if (closestPlayer != null)
         {
-            StartCharge();
+            SetDestination2D(closestPlayer.position);
+            // Si el jugador se aleja demasiado en X, volver a patrullar
+            if (closestDistance > detectionRange * 1.5f)
+            {
+                currentState = EnemyState.Patrolling;
+                return;
+            }
+
+            if (closestDistance < 3f)
+            {
+                StartCharge();
+            }
         }
     }
 
@@ -241,18 +281,34 @@ public class Horse : MonoBehaviour
         isCharging = true;
         chargeTimer = chargeDuration;
         agent.speed = chargeSpeed;
-        
+
         // Activar el collider de ataque
         StartCoroutine(ChargeHitboxCoroutine());
-        
+
         // Calcular dirección de carga solo en X
-        float directionX = Mathf.Sign(player.position.x - transform.position.x);
-        chargeTarget = new Vector3(
-            transform.position.x + directionX * chargeDistance,
-            transform.position.y,
-            initialZ
-        );
-        SetDestination2D(chargeTarget);
+        Transform closestPlayer = null;
+        float closestDistance = float.MaxValue;
+
+        foreach (var p in player)
+        {
+            float distanceToPlayerX = Mathf.Abs(p.position.x - transform.position.x);
+            if (distanceToPlayerX < closestDistance)
+            {
+                closestDistance = distanceToPlayerX;
+                closestPlayer = p;
+            }
+        }
+
+        if (closestPlayer != null)
+        {
+            float directionX = Mathf.Sign(closestPlayer.position.x - transform.position.x);
+            chargeTarget = new Vector3(
+                transform.position.x + directionX * chargeDistance,
+                transform.position.y,
+                initialZ
+            );
+            SetDestination2D(chargeTarget);
+        }
     }
 
     private IEnumerator ChargeHitboxCoroutine()
@@ -261,7 +317,7 @@ public class Horse : MonoBehaviour
         {
             attackCollider.enabled = true;
         }
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(1f);
         attackCollider.enabled = false;
     }
 
@@ -296,6 +352,8 @@ public class Horse : MonoBehaviour
             targetPoint = Mathf.Abs(transform.position.x - pointA.position.x) < Mathf.Abs(transform.position.x - pointB.position.x) ? pointB : pointA;
             SetDestination2D(targetPoint.position);
         }
+
+        CanDealDamage();
     }
 
     void OnDrawGizmos()
@@ -312,13 +370,29 @@ public class Horse : MonoBehaviour
         Gizmos.DrawLine(transform.position, transform.position + leftBoundary);
         Gizmos.DrawLine(transform.position, transform.position + rightBoundary);
 
-        // Dibujar línea al jugador si está en rango
-        if (player != null)
+        // Dibujar línea al jugador más cercano si está en rango
+        if (player != null && player.Length > 0)
         {
-            float directionX = Mathf.Sign(player.position.x - transform.position.x);
-            Vector3 directionToPlayer = new Vector3(directionX, 0, 0);
-            Gizmos.color = canSeePlayer ? Color.green : Color.red;
-            Gizmos.DrawRay(transform.position + Vector3.up * 1f, directionToPlayer * detectionRange);
+            Transform closestPlayer = null;
+            float closestDistance = float.MaxValue;
+
+            foreach (var p in player)
+            {
+                float distanceToPlayerX = Mathf.Abs(p.position.x - transform.position.x);
+                if (distanceToPlayerX < closestDistance)
+                {
+                    closestDistance = distanceToPlayerX;
+                    closestPlayer = p;
+                }
+            }
+
+            if (closestPlayer != null)
+            {
+                float directionX = Mathf.Sign(closestPlayer.position.x - transform.position.x);
+                Vector3 directionToPlayer = new Vector3(directionX, 0, 0);
+                Gizmos.color = canSeePlayer ? Color.green : Color.red;
+                Gizmos.DrawRay(transform.position + Vector3.up * 1f, directionToPlayer * detectionRange);
+            }
         }
     }
 
