@@ -26,6 +26,7 @@ public class ComboController : MonoBehaviour
     private float lastAttackTime;
     private bool canCombo = true;
     private int successfulHits = 0;
+    [SerializeField] private AudioClip[] attackSounds; // Array para los clips de sonido de ataque
 
     void Start()
     {
@@ -76,6 +77,17 @@ public class ComboController : MonoBehaviour
         }
 
         Debug.Log($"Ejecutando combo step {comboStep}");
+
+        // Reproducir sonido de ataque correspondiente
+        if (comboStep <= attackSounds.Length)
+        {
+            AudioSource audioSource = GameObject.Find("AtaqueCleo").GetComponent<AudioSource>();
+            if (audioSource != null)
+            {
+                audioSource.clip = attackSounds[comboStep - 1];
+                audioSource.Play();
+            }
+        }
 
         if (IsEnemyInFront())
         {

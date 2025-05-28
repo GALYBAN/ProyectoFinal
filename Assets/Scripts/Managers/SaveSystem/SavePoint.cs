@@ -89,6 +89,15 @@ public class SavePoint : MonoBehaviour
     {
         if (playerInRange && currentPlayer != null)
         {
+            // Recuperar vida y maná
+            PlayerStats playerStats = currentPlayer.GetComponent<PlayerStats>();
+            if (playerStats != null)
+            {
+                playerStats.Heal(); // Recuperar vida
+                playerStats.RegenerateManaSlot(); // Recuperar maná
+                Debug.Log("Vida y maná recuperados.");
+            }
+
             SaveSystem.Instance.SaveGame(checkpointName);
             Debug.Log($"Game saved at {checkpointName}");
         }

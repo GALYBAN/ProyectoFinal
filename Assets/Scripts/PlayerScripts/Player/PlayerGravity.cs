@@ -16,12 +16,15 @@ public class PlayerGravity : MonoBehaviour
 
     private PlayerInputs inputs;   
     private Animator anim; 
+    [SerializeField] private AudioClip dashSound;
+    private AudioSource audioSource;
 
     void Start()
     {
         anim = GetComponent<Animator>();
         inputs = GetComponentInParent<PlayerInputs>();
         groundSensor = GetComponent<GroundSensor>();
+        audioSource = GameObject.Find("DashCleo").GetComponent<AudioSource>();
     }
 
     public void ApplyGravity(CharacterController controller)
@@ -58,6 +61,13 @@ public class PlayerGravity : MonoBehaviour
             anim.SetTrigger("Dash");
             dashSpeed = new Vector3(dashForce * -transform.right.x, playerGravity.y, playerGravity.z);
             playerGravity =  dashSpeed;
+
+            if (audioSource != null && dashSound != null)
+            {
+                audioSource.clip = dashSound;
+                audioSource.Play();
+            }
+
             dashCount--;
             StartCoroutine(WaitForDash());
         }

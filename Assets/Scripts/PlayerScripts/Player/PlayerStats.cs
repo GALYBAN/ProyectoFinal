@@ -113,11 +113,9 @@ public class PlayerStats : MonoBehaviour
 
     public void Heal()
     {
-        if (currentHealthSlots < maxHealthSlots)
-        {
-            currentHealthSlots++;
-            UpdateUI();
-        }
+        currentHealthSlots = maxHealthSlots;
+        UpdateUI();
+        Debug.Log("Vida recuperada completamente.");
     }
 
     public void UpdateUI()

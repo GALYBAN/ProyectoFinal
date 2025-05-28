@@ -6,6 +6,7 @@ public class MovementController : MonoBehaviour
     [SerializeField] private float groundedSpeed = 5f;
     [SerializeField] private float airSpeed = 2.5f;
     [SerializeField] private float crouchSpeedMultiplier = 0.5f; // Reducirá la velocidad al 50% al agacharse
+    [SerializeField] private AudioClip runSound; // Clip de sonido para correr
 
     private float speed;
     private float speedMultiplier = 1f;
@@ -19,6 +20,7 @@ public class MovementController : MonoBehaviour
     private CharacterController controller;
     private PlayerInputs inputs;
     private GroundSensor groundSensor;
+   [SerializeField] private AudioSource audioSource; // Componente AudioSource
     
     void Start()
     {
@@ -27,6 +29,7 @@ public class MovementController : MonoBehaviour
         controller = GetComponent<CharacterController>();
         inputs = GetComponentInParent<PlayerInputs>();
         groundSensor = GetComponent<GroundSensor>();
+        audioSource = GameObject.Find("Correr").GetComponent<AudioSource>(); // Obtener el componente AudioSource
     }
 
     public bool Move()
@@ -45,6 +48,13 @@ public class MovementController : MonoBehaviour
             {
                 speed = groundedSpeed * speedMultiplier;
                 RotateToDirection(direction);
+                
+                // Reproducir sonido de correr si no se está reproduciendo
+                if (!audioSource.isPlaying)
+                {
+                    audioSource.clip = runSound;
+                    audioSource.Play();
+                }
             }
             else
             {
@@ -64,6 +74,7 @@ public class MovementController : MonoBehaviour
         else
         {
             anim.SetBool("Walk", false);
+            audioSource.Stop(); // Detener el sonido si no se está moviendo
         }
 
         return direction != Vector3.zero;
