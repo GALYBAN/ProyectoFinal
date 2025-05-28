@@ -58,6 +58,10 @@ public class MovementController : MonoBehaviour
             }
             else
             {
+                if (audioSource.isPlaying)
+                {
+                    audioSource.Stop();
+                }
                 speed = airSpeed * speedMultiplier;
                 AdjustAirSpeed(horizontal);
             }

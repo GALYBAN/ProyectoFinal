@@ -26,12 +26,6 @@ public class ActivatePlatform : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // Asegurarse de que el PlatformManager esté desactivado al inicio
-        if (platformManager != null)
-        {
-            platformManager.SetActive(false);
-        }
-
         // Si hay un prompt de interacción, lo desactivamos al inicio
         if (interactionPrompt != null)
         {

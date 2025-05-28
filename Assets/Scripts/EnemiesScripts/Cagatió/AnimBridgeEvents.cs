@@ -92,6 +92,7 @@ public class AnimBridgeEvents : MonoBehaviour
 
     public void ActivateCredits()
     {
+        GameObject.Find("CleoArmature").SetActive(false);
         creditsCanvas.SetActive(true);
         creditsAnimator.SetTrigger("Creditos");
         SOUNDManager.Instance.StopMusic();

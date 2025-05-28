@@ -38,4 +38,13 @@ public class SlashController : MonoBehaviour
         poolManager.ReturnToPool(gameObject);
     }
 
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Enemy"))
+        {
+            other.gameObject.GetComponent<EnemyStats>().TakeDamage(25);
+            StopSlash();
+        }
+    }
+
 }

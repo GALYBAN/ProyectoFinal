@@ -110,17 +110,16 @@ public class SaveSystem : MonoBehaviour
         saveData.checkpointName = checkpointName;
         saveData.isTransformed = transitionManager.IsTransformed();
 
-        // Buscar y guardar el estado del PlatformManager
+        // Guardar el estado del PlatformManager
         PlatformManager platformManager = GameObject.FindObjectOfType<PlatformManager>();
         if (platformManager != null)
         {
             saveData.isPlatformPowerActive = platformManager.gameObject.activeSelf;
-            Debug.Log($"PlatformManager found and state saved: {saveData.isPlatformPowerActive}");
+            Debug.Log($"Saving PlatformManager state: {saveData.isPlatformPowerActive}");
         }
         else
         {
-            Debug.LogWarning("PlatformManager not found in the scene. Setting isPlatformPowerActive to false.");
-            saveData.isPlatformPowerActive = false;
+            Debug.LogWarning("PlatformManager not found during save.");
         }
 
         Debug.Log($"Found characters - Unpowered: {cleoUnpowered.name} (Active: {cleoUnpowered.activeSelf}), " +
@@ -189,9 +188,20 @@ public class SaveSystem : MonoBehaviour
                 SaveData data = JsonUtility.FromJson<SaveData>(json);
                 
                 Debug.Log($"Loaded game data at checkpoint: {data.checkpointName}, IsTransformed: {data.isTransformed}");
-                Debug.Log($"Unpowered Character: {data.unpoweredCharacterName}, Active: {data.isUnpoweredActive}, Position: {data.unpoweredPosition.ToVector3()}");
-                Debug.Log($"Powered Character: {data.poweredCharacterName}, Active: {data.isPoweredActive}, Position: {data.poweredPosition.ToVector3()}");
-                
+                Debug.Log($"Loaded PlatformManager state: {data.isPlatformPowerActive}");
+
+                // Restaurar el estado del PlatformManager
+                PlatformManager platformManager = GameObject.FindObjectOfType<PlatformManager>();
+                if (platformManager != null)
+                {
+                    platformManager.gameObject.SetActive(data.isPlatformPowerActive);
+                    Debug.Log($"PlatformManager state restored: {data.isPlatformPowerActive}");
+                }
+                else
+                {
+                    Debug.LogWarning("PlatformManager not found during load.");
+                }
+
                 return data;
             }
             else

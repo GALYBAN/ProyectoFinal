@@ -13,7 +13,7 @@ public class SlashAttack : MonoBehaviour
     public ProjectilePoolManager poolManager;
     public Transform firePoint;
     public Transform spawnPoint; // Nuevo punto de spawn para el slash
-    public float cooldownTime = 1f;
+    public float cooldownTime = 3f;
     private bool isCooldown = false;
 
     void Awake()
@@ -27,7 +27,7 @@ public class SlashAttack : MonoBehaviour
 
     void Update()
     {
-        if (inputs.SlashInput && !isCooldown && playerStats.ConsumeManaSlot() && !move.Move() && groundSensor.IsGrounded())
+        if (inputs.SlashInput && !isCooldown && playerStats.ConsumeManaSlot())
         {
             anim.SetTrigger("Slash");
             GameObject slash = poolManager.GetProjectile(firePoint.position, firePoint.rotation);
