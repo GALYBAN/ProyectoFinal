@@ -11,6 +11,7 @@ public class ActivatePlatform : MonoBehaviour
     
     [Header("UI Feedback")]
     [SerializeField] private GameObject interactionPrompt; // Opcional: UI que muestra cuando se puede interactuar
+    [SerializeField] private GameObject controlCanvas;
 
     private bool playerInRange = false;
     private PlayerInputs playerInputs;
@@ -104,6 +105,9 @@ public class ActivatePlatform : MonoBehaviour
         {
             platformManager.SetActive(true);
             
+            // Activar el canvas de control
+            ActivateControlCanvas();
+            
             // Opcional: Desactivar este objeto después de obtener el poder
             gameObject.SetActive(false);
         }
@@ -111,5 +115,10 @@ public class ActivatePlatform : MonoBehaviour
         {
             Debug.LogWarning("Platform Manager reference is missing!");
         }
+    }
+
+    private void ActivateControlCanvas()
+    {
+        controlCanvas.SetActive(true);
     }
 }

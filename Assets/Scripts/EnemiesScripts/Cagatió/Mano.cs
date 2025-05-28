@@ -155,19 +155,13 @@ public class Mano : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (playerLayer == (playerLayer | (1 << other.gameObject.layer)))
+        if (other.CompareTag("Player"))
         {
-            DealDamage(other.gameObject);
-        }
-    }
-
-    void DealDamage(GameObject playerObj)
-    {
-        PlayerStats stats = playerObj.GetComponent<PlayerStats>();
-        if (stats != null)
-        {
-            stats.TakeDamage();
-            Debug.Log("Player damaged by hand!");
+            PlayerStats playerStats = other.GetComponent<PlayerStats>();
+            if (playerStats != null)
+            {
+                playerStats.TakeDamage();
+            }
         }
     }
 
